@@ -1,0 +1,52 @@
+﻿
+@using Microsoft.AspNetCore.Authentication;
+@using Microsoft.AspNetCore.Antiforgery;
+
+
+@page "/login"
+@layout spi.Components.Layout.MinimalLayout
+@inject IHttpContextAccessor HttpContextAccessor
+@inject NavigationManager Navigation
+@inject IAntiforgery Antiforgery
+@inject spi.Services.Usuario.UsuarioService UsuarioService
+@rendermode InteractiveServer
+
+<h3>Iniciar sesión</h3>
+
+@if (!string.IsNullOrEmpty(Error))
+{
+    <p style="color:red">@Error</p>
+}
+
+<EditForm Model="Model" OnValidSubmit="OnSubmitAsync">
+    <InputText @bind-Value="Model.Usuario" placeholder="Usuario" />
+    <InputText @bind-Value="Model.Contrasena" type="password" placeholder="Contraseña" />
+    <button type="submit">Entrar</button>
+</EditForm>
+
+@code {
+    private LoginModel Model = new();
+    private string Error;
+
+    private async Task OnSubmitAsync()
+    {
+        var user = await UsuarioService.ValidarUsuarioAsync(Model.Usuario, Model.Contrasena);
+
+        if (user is not null)
+        {
+            // Redirigir a un método de logout/login fuera del ciclo de Blazor
+            var uri = $"login-handler?user={Uri.EscapeDataString(user.Username)}&role={Uri.EscapeDataString(user.Role ?? "")}";
+            Navigation.NavigateTo(uri, forceLoad: true); // ⚠️ fuerza la recarga fuera del DOM Blazor
+        }
+        else
+        {
+            Error = "Credenciales inválidas";
+        }
+    }
+
+    public class LoginModel
+    {
+        public string Usuario { get; set; } = "";
+        public string Contrasena { get; set; } = "";
+    }
+}
