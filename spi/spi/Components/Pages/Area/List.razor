@@ -1,0 +1,90 @@
+﻿@rendermode InteractiveServer
+@page "/Area"
+@inject Services.Area.AreaService AreaService
+@using spi;
+@using System.IO;
+@using spi.Services.Area;
+@using spi.Models;
+@using spi.Components.Pages.Area;
+@inject IJSRuntime JS
+@inject NavigationManager Navigation
+
+
+@using System.Data;
+
+<h1>Areas</h1>
+
+<p> Valida Areas</p>
+@Message
+
+<RadzenButton Text="Agregar Areas" Icon="grid_on" Click="@(() => createproy())" class="mb-4 me-2" />
+
+@if (orderDetails == null)
+{
+
+    <p><em>Cargando...</em></p>
+}
+else
+{
+    <RadzenDataGrid @ref="grid" Data="@orderDetails" AllowVirtualization="true" Style="height:400px"
+                    AllowFiltering="true" FilterPopupRenderMode="PopupRenderMode.OnDemand"
+                    FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                    LogicalFilterOperator="LogicalFilterOperator.Or"
+                    AllowSorting="true"
+                    TItem="Area">
+        <Columns>
+            <RadzenDataGridColumn Property="@nameof(Area.Id)" Title="Id" />
+            <RadzenDataGridColumn Property="@nameof(Area.des_area)" Title="Area">
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn Property="@nameof(Area.siglas_area)" Title="Siglas" />
+        </Columns>
+    </RadzenDataGrid>
+
+
+
+}
+@code {
+
+
+    List<Area> orderDetails;
+    RadzenDataGrid<Area> grid;
+
+
+
+    public IEnumerable<Models.Area> area { get; set; }
+
+    public string Message { get; set; }
+
+
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        try
+        {
+
+            orderDetails = await AreaService.GetAllAreaAsync();
+
+        }
+        catch (Exception e)
+        {
+            Message = e.Message;
+        }
+    }
+
+
+    private void createproy()
+    {
+        // Lógica de abrir modal o lo que necesites
+
+        Navigation.NavigateTo("/createarea");
+
+
+    }
+
+
+
+
+
+
+}

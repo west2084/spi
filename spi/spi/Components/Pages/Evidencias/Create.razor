@@ -1,0 +1,149 @@
+﻿@rendermode InteractiveServer
+@page "/createevidencias/{ObservacionesId:int}/{ProyectoId:int}"
+@using spi.Models
+@using spi.Services.Observaciones
+@using spi.Services.Evidencias
+@using spi.Services.File
+@inject IWebHostEnvironment env
+@using Microsoft.AspNetCore.Components.Forms
+
+
+@inject EvidenciasService EvidenciasService
+@inject FileService fileservice
+
+@inject NavigationManager NavigationManager
+
+<div class="container ">
+
+    @if (isLoading)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+        <button class="btn btn-secondary" @onclick="Regresar">
+            ⬅ Regresar
+        </button>
+
+    <h3>Subir Evidencias </h3>
+    <EditForm Model="Evidencias" OnValidSubmit="SaveEvidencias">
+        <DataAnnotationsValidator />
+        <ValidationSummary class="alert alert-danger" />
+        <div class="form-control">
+
+            <label for="des_area">Nombre Archivo</label>
+            <InputText id="NombreOriginal" class="form-control" @bind-Value="Evidencias.NombreOriginal" />
+
+          
+
+            
+
+                <label for="archivo">Seleccionar archivo</label>
+                <InputFile OnChange="UploadFile" />
+
+
+        </div>
+        <br />
+        <button type="submit" class="btn btn-primary">Guardar</button>
+
+    </EditForm>
+}
+
+</div>
+@code {
+    [Parameter] public int ObservacionesId { get; set; }
+    [Parameter] public int ProyectoId { get; set; }
+
+    private Evidencias Evidencias = new Evidencias();
+
+    private bool isLoading = true;
+
+    private List<Evidencias> evidencias;
+    private IBrowserFile archivoSeleccionado;
+    string directorio;
+    string dir;
+
+    protected override async Task OnInitializedAsync()
+    {
+        evidencias = await EvidenciasService.GetAllEvidenciasAsync();
+        isLoading = false;
+        var s = await EvidenciasService.GetDatosEvidenciasAsync(ObservacionesId);
+        directorio = env.WebRootPath + "/" + s.Proyecto.des_proy + "/" + s.Area.siglas_area;
+        dir =  "/" + s.Proyecto.des_proy + "/" + s.Area.siglas_area;
+        
+    }
+
+    private async Task SaveEvidencias()
+    {
+        Evidencias.ObservacionesId = ObservacionesId;
+
+
+
+        //validar carpeta
+        fileservice.GuardarArchivoAsync(directorio,archivoSeleccionado.Name,"");
+
+        // Ruta final
+        var filePath = Path.Combine(directorio, archivoSeleccionado.Name);
+        var filePath2 = Path.Combine(dir, archivoSeleccionado.Name);
+
+        // Guardar el archivo
+        using (var stream = File.Create(filePath))
+        {
+            await archivoSeleccionado.OpenReadStream(maxAllowedSize: 50 * 1024 * 1024) // límite 50 MB
+                         .CopyToAsync(stream);
+        }
+
+        mensaje = $"Archivo guardado en: {filePath}";
+
+
+        Evidencias.RutaArchivo = filePath2;
+        Evidencias.FechaSubida = DateTime.Now;
+
+
+        await EvidenciasService.AddEvidenciasAsync(Evidencias);
+        NavigationManager.NavigateTo($"/evidencias/{ObservacionesId}/{ProyectoId}");
+    }
+
+
+    private string mensaje = string.Empty;
+
+    private async Task UploadFile(InputFileChangeEventArgs e)
+    {
+        // Toma el primer archivo
+        var archivo = e.File;
+        archivoSeleccionado = e.File;
+
+        /*
+        // Ruta de la carpeta donde quieres guardar (ej: wwwroot/Uploads)
+        var uploadsPath = Path.Combine(env.WebRootPath, "Uploads");
+
+        // Crear carpeta si no existe
+        if (!Directory.Exists(uploadsPath))
+        {
+            Directory.CreateDirectory(uploadsPath);
+        }
+
+        // Ruta final
+        var filePath = Path.Combine(uploadsPath, archivo.Name);
+
+        // Guardar el archivo
+        using (var stream = File.Create(filePath))
+        {
+            await archivo.OpenReadStream(maxAllowedSize: 50 * 1024 * 1024) // límite 50 MB
+                         .CopyToAsync(stream);
+        }
+
+        mensaje = $"Archivo guardado en: {filePath}";
+
+        */
+    }
+
+
+    void Regresar()
+    {
+        NavigationManager.NavigateTo($"evidencias/{ObservacionesId}/{ProyectoId}"); // Aquí la ruta a donde quieras volver
+    }
+
+
+
+}

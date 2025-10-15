@@ -1,0 +1,126 @@
+﻿@rendermode InteractiveServer
+@page "/observaciones/pendientes"
+@inject spi.Services.Observaciones.ObservacionesService ObservacionesService
+@inject NavigationManager Navigation
+@inject IJSRuntime JS
+@using spi.Models
+
+<h3>Observaciones Pendientes</h3>
+
+@if (observacionesPendientes == null)
+{
+    <p><em>Cargando...</em></p>
+}
+else if (!observacionesPendientes.Any())
+{
+    <div class="alert alert-info">No hay observaciones pendientes.</div>
+}
+else
+{
+    <table class="table table-hover align-middle">
+        <thead class="table-dark">
+            <tr>
+                <th>Proyecto</th>
+                <th>Indicador</th>
+                <th>Descripción</th>
+                <th>Fecha Observación</th>
+                <th>Estatus</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var obs in observacionesPendientes)
+            {
+                <tr>
+                    <td>@obs.Proyecto?.des_proy</td>
+                    <td>@obs.indicador</td>
+                    <td>@obs.des_obs</td>
+                    <td>@obs.fecha_obs.ToShortDateString()</td>
+                    <td>
+                        <span class="badge bg-warning text-dark">@obs.estatus</span>
+                    </td>
+                    <td>
+                        <button class="btn btn-sm btn-primary me-1" @onclick="() => VerEvidencias(obs.Id, obs.ProyectoId)">
+                            Ver Evidencias
+                        </button>
+                        <button class="btn btn-sm btn-secondary me-1" @onclick="() => EditarObservacion(obs.Id)">
+                            Editar
+                        </button>
+                        <button class="btn btn-sm btn-success me-1" @onclick="() => EliminarObservacion(obs.Id)">
+                            Terminar
+                        </button>
+                        <button class="btn btn-sm btn-danger" @onclick='() => CambiarEstatus(obs.Id, "Cancelado")'>
+                            Cancelar
+                        </button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<Observaciones> observacionesPendientes;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var todas = await ObservacionesService.GetAllObservacionesAsync();
+            observacionesPendientes = todas.Where(o => o.estatus == "Pendiente").ToList();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error cargando pendientes: {ex.Message}");
+            observacionesPendientes = new();
+        }
+    }
+
+    private void VerEvidencias(int idObs, int proyectoId)
+    {
+        Navigation.NavigateTo($"/evidencias/{idObs}/{proyectoId}");
+    }
+
+    private void EditarObservacion(int idObs)
+    {
+        Navigation.NavigateTo($"/editobservaciones/{idObs}");
+    }
+
+    private async Task CambiarEstatus(int idObs, string nuevoEstatus)
+    {
+        var obs = observacionesPendientes.FirstOrDefault(o => o.Id == idObs);
+        if (obs != null)
+        {
+            obs.estatus = nuevoEstatus;
+            await ObservacionesService.UpdateObservacionesAsync(obs);
+
+            // Refrescar lista
+            observacionesPendientes = observacionesPendientes
+                .Where(o => o.estatus == "Pendiente")
+                .ToList();
+        }
+    }
+
+    private async Task EliminarObservacion(int id)
+    {
+        bool confirm = await JS.InvokeAsync<bool>("confirm", "¿Seguro que deseas eliminar esta observación?");
+        if (!confirm)
+            return;
+
+        try
+        {
+            await ObservacionesService.DeleteObservacionesAsync(id);
+
+            // Actualizar la lista en pantalla sin recargar toda la página
+            observacionesPendientes = observacionesPendientes.Where(o => o.Id != id).ToList();
+
+            // Mensaje visual rápido
+            await JS.InvokeVoidAsync("alert", "Observación eliminada correctamente.");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error al eliminar observación: {ex.Message}");
+            await JS.InvokeVoidAsync("alert", "Ocurrió un error al eliminar la observación.");
+        }
+    }
+}

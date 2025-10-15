@@ -1,0 +1,182 @@
+﻿@rendermode InteractiveServer
+@page "/createobservaciones/{ProyectoId:int?}"
+@using Microsoft.EntityFrameworkCore
+@using spi.Models
+@using spi.Services.Observaciones
+@using spi.Services.Area
+@using spi.Services.Proyecto
+@inject ObservacionesService ObservacionesService
+@inject AreaService AreaService
+@inject ProyectoService ProyectoService
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+
+<div class="container ">
+
+    @if (isLoading)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+
+    <h3>Registro de Observación</h3>
+    <EditForm Model="Observaciones" OnValidSubmit="SaveObservacion">
+        <DataAnnotationsValidator />
+        <ValidationSummary class="alert alert-danger" />
+
+        <div class="form-control">
+
+
+            <label for="des_area">Clave Observación</label>
+            <InputText id="des_area" class="form-control" @bind-Value="Observaciones.cve_obs" />
+
+           <label for="indicador">Indicador/Tareas</label>
+           <InputTextArea id="indicador" class="form-control" rows="5" @bind-Value="Observaciones.indicador" />
+
+            <label for="siglas_area">Observación</label>
+            <InputTextArea id="des_obs" class="form-control" rows="5" @bind-Value="Observaciones.des_obs" />
+
+            <label for="siglas_area">Fecha Observacion</label>
+            <InputDate  id="fecha_obs" class="form-control" @bind-Value="Observaciones.fecha_obs" />
+         
+            <label for="siglas_area">Fecha Cumplimiento</label>
+            <InputDate id="fecha_cumplimiento" class="form-control" @bind-Value="Observaciones.fecha_cumplimiento" />
+
+            <label for="fecha_ult_act">fecha Actual</label>
+            <InputDate id="fecha_ult_act" class="form-control" @bind-Value="Observaciones.fecha_ult_act" />
+
+                <label for="estatus">Estatus</label>
+                <select id="estatus" class="form-control" @bind="Observaciones.estatus">
+                    <option value="">Seleccione un Estatus</option>
+                    <option value="Pendiente">Pendiente</option>
+                    <option value="Terminado">Terminado</option>
+                    <option value="Cancelado">Cancelado</option>
+                </select>
+
+                <label for="valor_meta">Meta</label>
+                <InputNumber id="valor_meta" class="form-control" @bind-Value="Observaciones.valor_meta" />
+
+                <label for="valor_cumplimiento">Avance</label>
+                <InputNumber id="valor_cumplimiento" class="form-control" @bind-Value="Observaciones.valor_cumplimiento" />
+
+                <label>Áreas</label>
+                @foreach (var n in area)
+                {
+                    <div>
+                        <input type="checkbox"
+                               value="@n.Id"
+                               checked="@SelectedAreas.Contains(n.Id)"
+                               @onchange="e => ToggleArea(n.Id, (bool)e.Value)" />
+                        <span>@n.des_area</span>
+                    </div>
+                }
+
+                <p>Seleccionadas: @string.Join(", ", SelectedAreas)</p>
+
+
+            <label for="proyecto">Proyecto</label>
+            <select id="Proyecto" class="form-control" @bind="Observaciones.ProyectoId" disabled="@(ProyectoId != 0)">
+                @if (ProyectoId == 0)
+                {
+                    <option value="">Seleccione Proyecto</option>
+                }
+
+                @foreach (var n in proyecto)
+                {
+                    <option value="@n.Id">@n.des_proy</option>
+                }
+            </select>
+
+        </div>
+        <br />
+        <button type="submit" class="btn btn-primary">Guardar</button>
+
+    </EditForm>
+}
+
+</div>
+@code {
+    [Parameter] public int? Id { get; set; }
+    [Parameter] public int ProyectoId { get; set; }
+    private Observaciones Observaciones = new Observaciones();
+    private List<Area> area;
+    private List<Proyecto> proyecto;
+    private bool isLoading = true;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        area = await  AreaService.GetAllAreaAsync();
+        proyecto = await ProyectoService.GetAllProyectosAsync();
+        isLoading = false;
+
+        Observaciones.fecha_obs = DateTime.Today;
+        Observaciones.fecha_cumplimiento = DateTime.Today;
+        Observaciones.fecha_ult_act = DateTime.Now;
+
+        if (ProyectoId != 0)
+        {
+            Observaciones.ProyectoId = ProyectoId;
+        }
+
+    }
+
+    private async Task SaveObservacion()
+    {
+        try
+        {
+            // Validar que haya al menos un área seleccionada
+            if (SelectedAreas == null || !SelectedAreas.Any())
+            {
+                await JSRuntime.InvokeVoidAsync("alert", "Debes seleccionar al menos un área antes de guardar la observación.");
+                return;
+            }
+
+            Observaciones.AreaId = SelectedAreas.First(); // cumple con la FK obligatoria
+
+            // Primero guardamos solo la observación
+            await ObservacionesService.AddObservacionesAsync(Observaciones);
+
+            // Aseguramos que la lista esté inicializada
+            Observaciones.ObservacionAreas ??= new List<ObservacionArea>();
+
+            foreach (var areaId in SelectedAreas)
+            {
+                var relacion = new ObservacionArea
+                {
+                    ObservacionesId = Observaciones.Id, // ya tenemos el Id generado por la BD
+                    AreaId = areaId
+                };
+                await ObservacionesService.AddObservacionAreaAsync(relacion);
+            }
+
+            // Confirmar
+            await JSRuntime.InvokeVoidAsync("alert", "Observación guardada correctamente.");
+            NavigationManager.NavigateTo($"/observaciones/{ProyectoId}");
+        }
+        catch (DbUpdateException ex)
+        {
+            Console.WriteLine($"Error al guardar en base de datos: {ex.InnerException?.Message ?? ex.Message}");
+            await JSRuntime.InvokeVoidAsync("alert", "Error al guardar la observación. Verifica los datos seleccionados.");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error inesperado: {ex.Message}");
+            await JSRuntime.InvokeVoidAsync("alert", "Ocurrió un error inesperado al guardar la observación.");
+        }
+    }
+
+
+    private List<int> SelectedAreas { get; set; } = new();
+
+    private void ToggleArea(int areaId, bool isChecked)
+    {
+        if (isChecked && !SelectedAreas.Contains(areaId))
+            SelectedAreas.Add(areaId);
+        else if (!isChecked)
+            SelectedAreas.Remove(areaId);
+    }
+
+
+}

@@ -1,0 +1,16 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\spi",
+    "\\spi\\Components",
+    "\\spi\\Components\\Pages",
+    "\\spi\\Components\\Pages\\Area",
+    "\\spi\\Components\\Pages\\Observaciones",
+    "\\spi\\Data",
+    "\\spi\\Models",
+    "\\spi\\Services",
+    "\\spi\\Services\\Observaciones"
+  ],
+  "SelectedNode": "\\spi.sln",
+  "PreviewInSolutionExplorer": false
+}

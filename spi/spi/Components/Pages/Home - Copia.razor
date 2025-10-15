@@ -1,0 +1,76 @@
+﻿@rendermode InteractiveServer
+@page "/resp"
+@inject Services.Observaciones.ObservacionesService ObservacionesService
+
+
+
+<PageTitle>Inicio</PageTitle>
+
+<h1>Sistema de Administración de Reuniones</h1>
+
+
+ <RadzenStack class="rz-p-0 rz-p-md-6 rz-p-lg-12">
+    <RadzenRow>
+        <RadzenColumn Size="12" SizeLG="6">
+            <h4>Observaciones Pendientes             </h4>
+            <RadzenChart style="height: 600px">
+                <RadzenBarSeries Data="@listobs()" CategoryProperty="Area" Title="Cantidad" LineType="LineType.Dashed" ValueProperty="cantidad">
+                    <RadzenSeriesDataLabels Visible="true" />
+                </RadzenBarSeries>
+                <RadzenValueAxis Step="1">
+                    <RadzenGridLines Visible="true" />
+                    <RadzenAxisTitle Text="Cantidad" />
+                              </RadzenValueAxis >
+
+                           <RadzenBarOptions Radius="5" Height="15" />
+                         </RadzenChart>
+                      </RadzenColumn>
+                </RadzenRow>
+              </RadzenStack>
+
+@code {
+
+    class DataItem
+    {
+        public int cantidad { get; set; }
+        public string Area { get; set; }
+
+    }
+
+
+
+
+    protected override async Task OnInitializedAsync()
+    {
+    
+    }
+
+
+
+    public IEnumerable<Models.Observaciones> obs { get; set; }
+    public string Message { get; set; }
+
+
+    
+
+    private List<DataItem> listobs()
+    {
+        List<DataItem> l = new List<DataItem>();
+
+        var lista = ObservacionesService.GetGroupObs();
+        foreach (var a in lista)
+        {
+            DataItem l1 = new DataItem();
+            l1.Area = a.Area;
+            l1.cantidad = a.cantidad;
+            
+
+            l.Add(l1);
+        }
+
+        return l;
+
+    }
+
+
+}

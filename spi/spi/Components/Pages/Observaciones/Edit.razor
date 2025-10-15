@@ -1,0 +1,150 @@
+﻿@rendermode InteractiveServer
+@page "/editobservaciones/{Id:int?}"
+@using spi.Models
+@using spi.Services.Observaciones
+@using spi.Services.Area
+@using spi.Services.Proyecto
+@inject ObservacionesService ObservacionesService
+@inject AreaService AreaService
+@inject ProyectoService ProyectoService
+
+@inject NavigationManager NavigationManager
+
+<div class="container ">
+
+    @if (isLoading)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else
+    {
+
+
+        <h3>Editar de  Observación </h3>
+        <EditForm Model="Observaciones" OnValidSubmit="SaveObservacion">
+            <DataAnnotationsValidator />
+            <ValidationSummary class="alert alert-danger" />
+
+            <div class="form-control">
+
+
+                <label for="des_area">Clave Observación</label>
+                <InputText id="des_area" class="form-control" @bind-Value="Observaciones.cve_obs" />
+
+                <label for="indicador">Indicador/Tareas</label>
+                <InputTextArea id="indicador" class="form-control" rows="5" @bind-Value="Observaciones.indicador" />
+
+                <label for="siglas_area">Observación</label>
+                <InputTextArea id="des_obs" class="form-control" rows="5" @bind-Value="Observaciones.des_obs" />
+
+                <label for="siglas_area">Fecha Observacion</label>
+                <InputDate id="fecha_obs" class="form-control" @bind-Value="Observaciones.fecha_obs" />
+
+                <label for="siglas_area">Fecha Cumplimiento</label>
+                <InputDate id="fecha_cumplimiento" class="form-control" @bind-Value="Observaciones.fecha_cumplimiento" />
+
+                <label for="fecha_ult_act">fecha Acutal</label>
+                <InputDate id="fecha_ult_act" class="form-control" @bind-Value="Observaciones.fecha_ult_act" />
+                
+                <label for="estatus">Estatus</label>
+                <select id="estatus" class="form-control" @bind="Observaciones.estatus">
+                    <option value="">Seleccione un Estatus</option>
+                    <option value="Pendiente">Pendiente</option>
+                    <option value="Terminado">Terminado</option>
+                    <option value="Cancelado">Cancelado</option>
+                </select>
+
+                <label for="valor_meta">Meta</label>
+                <InputNumber id="valor_meta" class="form-control" @bind-Value="Observaciones.valor_meta" />
+
+                <label for="valor_cumplimiento">Avance</label>
+                <InputNumber id="valor_cumplimiento" class="form-control" @bind-Value="Observaciones.valor_cumplimiento" />
+
+                <label>Áreas Responsables</label>
+        <RadzenListBox @bind-Value="selectedAreas"
+                       Data="@areas"
+                       TextProperty="des_area"
+                       ValueProperty="Id"
+                       Multiple="true"
+                       Style="width:100%; height:200px" />
+
+
+
+
+         
+
+
+            </div>
+            <br />
+            <button type="submit" class="btn btn-primary">Guardar</button>
+
+        </EditForm>
+    }
+
+</div>
+@code {
+    [Parameter] public int? Id { get; set; }
+    [Parameter] public int ProyectoId { get; set; }
+    private Observaciones Observaciones = new Observaciones();
+    private List<Area> area;
+    private List<Proyecto> proyecto;
+    private bool isLoading = true;
+
+    private List<Area> areas = new List<Area>();
+    private List<int> selectedAreas = new List<int>();
+
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Cargar todas las áreas
+        areas = await AreaService.GetAllAreaAsync();
+
+        area = await AreaService.GetAllAreaAsync();
+        proyecto = await ProyectoService.GetAllProyectosAsync();
+
+        Observaciones = await ObservacionesService.GetObservacionesByIdAsync(Id.Value);
+
+        // Inicializa selectedAreas con las áreas actuales de la observación
+        if (Observaciones.ObservacionAreas != null)
+        {
+            selectedAreas = Observaciones.ObservacionAreas.Select(oa => oa.AreaId).ToList();
+        }
+
+        isLoading = false;
+
+    }
+
+    private async Task SaveObservacion()
+    {
+        var actuales = Observaciones.ObservacionAreas
+            .Where(oa => oa.ObservacionesId == Observaciones.Id)
+            .ToList();
+
+        // Eliminar áreas no seleccionadas
+        var eliminar = actuales.Where(a => !selectedAreas.Contains(a.AreaId)).ToList();
+        foreach (var oa in eliminar)
+        {
+            Observaciones.ObservacionAreas.Remove(oa);
+        }
+
+        // Agregar nuevas áreas (solo si no existen)
+        var agregar = selectedAreas
+            .Where(aid => !actuales.Any(c => c.AreaId == aid))
+            .Select(aid => new ObservacionArea
+            {
+                ObservacionesId = Observaciones.Id,
+                AreaId = aid
+            }).ToList();
+
+        foreach (var oa in agregar)
+        {
+            Observaciones.ObservacionAreas.Add(oa);
+        }
+
+        await ObservacionesService.UpdateObservacionesAsync(Observaciones);
+
+        NavigationManager.NavigateTo($"/observaciones/{Observaciones.ProyectoId}");
+    }
+
+}

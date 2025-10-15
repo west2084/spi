@@ -1,0 +1,104 @@
+﻿
+@rendermode InteractiveServer
+@page "/Proyecto"
+@inject Services.Proyecto.ProyectoService ProyectoService
+@using spi;
+@using System.IO;
+@using spi.Services.Proyecto;
+@using spi.Models;
+@using spi.Components.Pages.Proyecto;
+@inject IJSRuntime JS
+@inject NavigationManager Navigation
+
+
+@using System.Data;
+
+<h1>Gestión de Proyectos</h1>
+
+<p> Valida Proyetos</p>
+@Message
+
+<RadzenButton Text="Agregar Proyecto" Icon="grid_on" Click="@(() => createproy())" class="mb-4 me-2" />
+
+@if (orderDetails == null)
+{
+    
+    <p><em>Cargando...</em></p>
+}
+else
+{
+    <RadzenDataGrid @ref="grid" Data="@orderDetails" AllowVirtualization="true" Style="height:400px" 
+                    AllowFiltering="true" FilterPopupRenderMode="PopupRenderMode.OnDemand"
+                    FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                    LogicalFilterOperator="LogicalFilterOperator.Or"
+                    AllowSorting="true"
+                    TItem="Proyecto"
+                    >
+        <Columns>
+            
+            <RadzenDataGridColumn Property="@nameof(Proyecto.des_proy)" Title="Proyecto">
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn Property="@nameof(Proyecto.tipo_proy)"  Title="Tipo"   />
+              <RadzenDataGridColumn Title="Observaciones">
+                       <Template Context="item">
+                <RadzenButton Icon="visibility"
+                              ButtonStyle="ButtonStyle.Primary"
+                              Size="ButtonSize.Small"
+                              Click="@(() => IrADetalle(item.Id))" />
+                              </Template Context="item">
+            </RadzenDataGridColumn>
+        </Columns>
+    </RadzenDataGrid>
+
+
+
+}
+    @code {
+
+
+        List<Proyecto> orderDetails;
+    RadzenDataGrid<Proyecto> grid;
+
+
+
+        public IEnumerable<Models.Proyecto> proyecto { get; set; }
+
+        public string Message { get; set; }
+
+
+
+        protected override async Task OnInitializedAsync()
+        {
+
+        try
+        {
+
+            orderDetails= await ProyectoService.GetAllProyectosAsync();
+
+        }
+        catch (Exception e)
+        {
+            Message = e.Message;
+        }
+        }
+
+
+        private void createproy()
+        {
+        // Lógica de abrir modal o lo que necesites
+
+        Navigation.NavigateTo("/createproy");
+
+        
+        }
+
+
+    void IrADetalle(int id)
+    {
+        Navigation.NavigateTo($"/observaciones/{id}");
+    }
+
+    
+
+
+}

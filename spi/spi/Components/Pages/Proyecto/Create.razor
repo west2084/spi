@@ -1,0 +1,66 @@
+﻿@rendermode InteractiveServer
+@page "/createproy"
+@using spi.Models
+@using spi.Services.Proyecto
+@inject ProyectoService ProyectoService
+
+@inject NavigationManager NavigationManager
+
+<div class="container ">
+
+
+        <h3>Crear Proyecto</h3>
+        <EditForm Model="Proyecto" OnValidSubmit="SaveProyecto">
+            <DataAnnotationsValidator />
+            <ValidationSummary class="alert alert-danger" />
+
+            <div class="form-control">
+                
+
+                <label for="des_proyecto">Proyecto</label>
+                <InputText id="des_proyecto" class="form-control" @bind-Value="Proyecto.des_proy" />
+
+                <label for="tipo_proy">tipo_proyecto</label>
+                <InputText id="tipo_proy" class="form-control" @bind-Value="Proyecto.tipo_proy" />
+
+            <label for="tipo_proy">Fecha Proyecto</label>
+            <InputDate id="tipo_proy" class="form-control" @bind-Value="Proyecto.fecha" />
+
+            <label for="estatus">Estatus</label>
+            <select id="estatus" class="form-control" @bind="Proyecto.estatus">
+                <option value="">Seleccione un Estatus</option>
+                <option value="Pendiente">Pendiente</option>
+                <option value="Terminado">Terminado</option>
+                <option value="Cancelado">Cancelado</option>
+            </select>
+            </div>
+            <br />
+            <button type="submit" class="btn btn-primary">Guardar</button>
+
+        </EditForm>
+
+    
+</div>
+@code {
+    [Parameter] public int? Id { get; set; }
+
+    private Proyecto Proyecto = new Proyecto();
+    
+    
+    private bool isLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        
+    }
+
+    private async Task SaveProyecto()
+    {
+        
+                 
+            await ProyectoService.AddProyectoAsync(Proyecto);
+        
+        NavigationManager.NavigateTo("/proyecto");
+    }
+
+}

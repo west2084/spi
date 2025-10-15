@@ -1,0 +1,137 @@
+﻿@rendermode InteractiveServer
+@page "/observaciones/{ProyectoId:int?}"
+@inject Services.Observaciones.ObservacionesService ObservacionesService
+@using spi;
+@using System.IO;
+@using spi.Services.Observaciones;
+@using spi.Models;
+@using spi.Components.Pages.Observaciones;
+@inject IJSRuntime JS
+@inject NavigationManager Navigation
+
+
+@using System.Data;
+
+<h1>Observaciones</h1>
+
+<p> Valida Observaciones</p>
+@Message
+
+<RadzenButton Text="Agregar Observaciones" Icon="grid_on" Click="@(() => createobservaciones())" class="mb-4 me-2" />
+
+@if (orderDetails == null)
+{
+
+    <p><em>Cargando...</em></p>
+}
+else
+{
+    <RadzenDataGrid @ref="grid" Data="@orderDetails" AllowVirtualization="true" Style="height:400px"
+                    AllowFiltering="true" FilterPopupRenderMode="PopupRenderMode.OnDemand"
+                    FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                    LogicalFilterOperator="LogicalFilterOperator.Or"
+                    AllowSorting="true"
+                    TItem="Observaciones">
+        <Columns>
+            
+            <RadzenDataGridColumn Property="@nameof(Observaciones.indicador)" Title="Indicador" />
+            <RadzenDataGridColumn Property="@nameof(Observaciones.valor_meta)" Title="Meta" />
+            <RadzenDataGridColumn Property="@nameof(Observaciones.valor_cumplimiento)" Title="Porcentaje" />
+            <RadzenDataGridColumn Property="@nameof(Observaciones.estatus)" Title="Estatus" />
+            <RadzenDataGridColumn Property="@nameof(Observaciones.des_obs)" Title="Observaciones">
+            </RadzenDataGridColumn>
+            
+            
+            <RadzenDataGridColumn Title="Áreas">
+                <Template Context="data">
+                @if (data.ObservacionAreas != null && data.ObservacionAreas.Any())
+                {
+                    @string.Join(", ",data.ObservacionAreas.Select(oa => oa.Area.siglas_area))
+                }
+                else
+                {
+                    <span>-</span>
+                }
+                </Template>
+            </RadzenDataGridColumn>
+            
+            
+    <RadzenDataGridColumn Title="Editar">
+                       <Template Context="item">
+                <RadzenButton Icon="description"
+                              ButtonStyle="ButtonStyle.Primary"
+                              Size="ButtonSize.Small"
+                              Click="@(() => IrAEditar(item.Id))" />
+                              </Template Context="item">
+            </RadzenDataGridColumn>
+
+
+    <RadzenDataGridColumn Title="Evidencias">
+                       <Template Context="item">
+                <RadzenButton Icon="visibility"
+                              ButtonStyle="ButtonStyle.Primary"
+                              Size="ButtonSize.Small"
+                              Click="@(() => IrADetalle(item.Id))" />
+                              </Template Context="item">
+            </RadzenDataGridColumn>
+
+
+        </Columns>
+    </RadzenDataGrid>
+
+
+
+}
+@code {
+
+
+    List<Observaciones> orderDetails;
+    RadzenDataGrid<Observaciones> grid;
+
+      [Parameter] public int ProyectoId { get; set; }
+
+    public IEnumerable<Models.Observaciones> observaciones { get; set; }
+
+    public string Message { get; set; }
+
+
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        try
+        {
+
+            orderDetails = await ObservacionesService.GetProyObservacionesAsync(ProyectoId);
+
+        }
+        catch (Exception e)
+        {
+            Message = e.Message;
+        }
+    }
+
+
+    private void createobservaciones()
+    {
+        // Lógica de abrir modal o lo que necesites
+
+        Navigation.NavigateTo($"/createobservaciones/{ProyectoId}");
+
+
+    }
+
+    void IrADetalle(int id)
+    {
+        Navigation.NavigateTo($"/evidencias/{id}/{ProyectoId}");
+    }
+
+
+       void IrAEditar(int id)
+    {
+        Navigation.NavigateTo($"/editobservaciones/{id}");
+    }
+
+
+}
+

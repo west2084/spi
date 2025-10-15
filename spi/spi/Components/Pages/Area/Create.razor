@@ -1,0 +1,60 @@
+﻿@rendermode InteractiveServer
+@page "/createarea"
+@using spi.Models
+@using spi.Services.Area
+@inject AreaService AreaService
+
+@inject NavigationManager NavigationManager
+
+<div class="container ">
+
+
+    <h3>Crear ARea</h3>
+    <EditForm Model="Area" OnValidSubmit="SaveArea">
+        <DataAnnotationsValidator />
+        <ValidationSummary class="alert alert-danger" />
+
+        <div class="form-control">
+
+
+            <label for="des_area">Area</label>
+            <InputText id="des_area" class="form-control" @bind-Value="Area.des_area" />
+
+            <label for="siglas_area">Siglas</label>
+            <InputText id="siglas_area" class="form-control" @bind-Value="Area.siglas_area" />
+
+
+
+
+        </div>
+        <br />
+        <button type="submit" class="btn btn-primary">Guardar</button>
+
+    </EditForm>
+
+
+</div>
+@code {
+    [Parameter] public int? Id { get; set; }
+
+    private Area Area = new Area();
+
+
+    private bool isLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+
+    }
+
+    private async Task SaveArea()
+    {
+
+
+
+        await AreaService.AddAreaAsync(Area);
+
+        NavigationManager.NavigateTo("/area");
+    }
+
+}

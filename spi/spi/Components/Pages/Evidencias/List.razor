@@ -1,0 +1,125 @@
+﻿@rendermode InteractiveServer
+@page "/evidencias/{ObservacionId:int?}/{ProyectoId:int?}"
+@inject Services.Evidencias.EvidenciasService EvidenciasService
+@using spi;
+@using System.IO;
+@using spi.Services.Evidencias;
+@using spi.Models;
+@using spi.Components.Pages.Evidencias;
+@inject IJSRuntime JS
+@inject NavigationManager Navigation
+
+
+
+@code {
+    [Parameter]
+    public int ObservacionId { get; set; }
+    [Parameter]
+    public int ProyectoId { get; set; }
+
+
+    
+}
+
+@using System.Data;
+
+<h1>Evidencias</h1>
+
+<p> Valida Evidencias</p>
+@Message
+<button class="btn btn-secondary" @onclick="Regresar">
+    ⬅ Regresar
+</button>
+<RadzenButton Text="Agregar Evidencias" Icon="grid_on" Click="@(() => createevidencias(ObservacionId))" class="mb-4 me-2" />
+
+@if (orderDetails == null)
+{
+
+    <p><em>Cargando...</em></p>
+}
+else
+{
+    <RadzenDataGrid @ref="grid" Data="@orderDetails" AllowVirtualization="true" Style="height:400px"
+                    AllowFiltering="true" FilterPopupRenderMode="PopupRenderMode.OnDemand"
+                    FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                    LogicalFilterOperator="LogicalFilterOperator.Or"
+                    AllowSorting="true"
+                    TItem="Evidencias">
+        <Columns>
+            
+            <RadzenDataGridColumn Property="@nameof(Evidencias.NombreOriginal)" Title="Nombre Archivo">
+            </RadzenDataGridColumn>
+
+            <RadzenDataGridColumn Title="Archivo">
+                <Template Context="data">
+                    <a href="@("/spi"+data.RutaArchivo)" target="_blank" download="@data.NombreOriginal">
+                        Descargar
+                    </a>
+                </Template>
+            </RadzenDataGridColumn>
+
+
+            <RadzenDataGridColumn Property="@nameof(Evidencias.FechaSubida)" Title="Fecha Act" />
+            
+            <RadzenDataGridColumn Title="Observacion">
+                <Template Context="data">
+                    @data.Observaciones?.cve_obs
+                </Template>
+            </RadzenDataGridColumn>
+            
+        </Columns>
+    </RadzenDataGrid>
+
+
+
+}
+@code {
+
+
+    List<Evidencias> orderDetails;
+    RadzenDataGrid<Evidencias> grid;
+
+
+
+    public IEnumerable<Models.Observaciones> observaciones { get; set; }
+
+    public string Message { get; set; }
+
+
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        try
+        {
+
+            orderDetails = await EvidenciasService.GetObsEvidenciasAsync(ObservacionId);
+
+        }
+        catch (Exception e)
+        {
+            Message = e.Message;
+        }
+    }
+
+
+    private void createevidencias(int id)
+    {
+        // Lógica de abrir modal o lo que necesites
+
+        Navigation.NavigateTo($"/createevidencias/{id}/{ProyectoId}");
+
+        
+    }
+
+
+    void Regresar()
+    {
+        Navigation.NavigateTo($"/observaciones/{ProyectoId}"); // Aquí la ruta a donde quieras volver
+    }
+
+
+
+
+}
+
