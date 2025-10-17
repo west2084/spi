@@ -1,0 +1,75 @@
+﻿@rendermode InteractiveServer
+@page "/usuarios"
+@using spi.Models
+@inject spi.Services.Usuario.UsuarioService UsuarioService
+@inject Microsoft.JSInterop.IJSRuntime JsRuntime
+@inject NavigationManager Navigation
+
+<h3>Usuarios</h3>
+
+<button class="btn btn-primary mb-3" @onclick="NuevoUsuario">Nuevo usuario</button>
+
+@if (usuarios == null)
+{
+    <p>Cargando...</p>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Username</th>
+                <th>Nombre</th>
+                <th>Apaterno</th>
+                <th>Amaterno</th>
+                <th>Matricula</th>
+                <th>Cargo</th>
+                <th>Role</th>
+                <th>Área</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var u in usuarios)
+            {
+                <tr>
+                    <td>@u.Username</td>
+                    <td>@u.Nombre</td>
+                    <td>@u.Apaterno</td>
+                    <td>@u.Amaterno</td>
+                    <td>@u.Matricula</td>
+                    <td>@u.Cargo</td>
+                    <td>@u.Role</td>
+                    <td>@(u.Area?.des_area ?? "")</td>
+                    <td>
+                        <button class="btn btn-sm btn-secondary me-1" @onclick="() => EditarUsuario(u.Id)">Editar</button>
+                        <button class="btn btn-sm btn-danger" @onclick="() => EliminarUsuario(u.Id)">Eliminar</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    List<spi.Models.Usuario> usuarios;
+
+    protected override async Task OnInitializedAsync()
+    {
+        usuarios = await UsuarioService.GetAllAsync();
+    }
+
+    void NuevoUsuario() => Navigation.NavigateTo("/usuarios/create");
+
+    void EditarUsuario(int id) => Navigation.NavigateTo($"/usuarios/edit/{id}");
+
+    async Task EliminarUsuario(int id)
+    {
+        var confirm = await JsRuntime.InvokeAsync<bool>("confirm", "¿Eliminar usuario?");
+        if (confirm)
+        {
+            await UsuarioService.DeleteAsync(id);
+            usuarios = await UsuarioService.GetAllAsync();
+        }
+    }
+}

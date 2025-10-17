@@ -47,6 +47,10 @@ namespace spi.Models
         public int ProyectoId { get; set; }
         public virtual Proyecto Proyecto { get; set; }
 
+        // Para el filtrado por usuario y requiere migración en UsuarioId de base de datos
+        // public int UsuarioId { get; set; }
+        // public virtual Usuario Usuario { get; set; }
+
 
         public int AreaId { get; set; }
         public virtual Area Area { get; set; }

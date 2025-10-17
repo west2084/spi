@@ -5135,23 +5135,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\francisco.lopezv\\.nuget\\packages\\": {},
+    "C:\\Users\\jmlrs\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\francisco.lopezv\\Documents\\GitHub\\spi2\\spi\\spi\\spi.csproj",
+      "projectUniqueName": "C:\\Users\\jmlrs\\Documents\\Servicio social\\Trabajos\\spi\\spi\\spi\\spi.csproj",
       "projectName": "spi",
-      "projectPath": "C:\\Users\\francisco.lopezv\\Documents\\GitHub\\spi2\\spi\\spi\\spi.csproj",
-      "packagesPath": "C:\\Users\\francisco.lopezv\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\francisco.lopezv\\Documents\\GitHub\\spi2\\spi\\spi\\obj\\",
+      "projectPath": "C:\\Users\\jmlrs\\Documents\\Servicio social\\Trabajos\\spi\\spi\\spi\\spi.csproj",
+      "packagesPath": "C:\\Users\\jmlrs\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\jmlrs\\Documents\\Servicio social\\Trabajos\\spi\\spi\\spi\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\francisco.lopezv\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\jmlrs\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
@@ -5160,6 +5160,7 @@
       ],
       "sources": {
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+        "C:\\Program Files\\dotnet\\library-packs": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
@@ -5172,7 +5173,13 @@
         "warnAsError": [
           "NU1605"
         ]
-      }
+      },
+      "restoreAuditProperties": {
+        "enableAudit": "true",
+        "auditLevel": "low",
+        "auditMode": "direct"
+      },
+      "SdkAnalysisLevel": "9.0.300"
     },
     "frameworks": {
       "net8.0": {
@@ -5228,7 +5235,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.100/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.305/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

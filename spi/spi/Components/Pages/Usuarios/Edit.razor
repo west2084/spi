@@ -1,0 +1,116 @@
+﻿@rendermode InteractiveServer
+@page "/usuarios/edit/{id:int}"
+@inject spi.Services.Usuario.UsuarioService UsuarioService
+@inject spi.Services.Area.AreaService AreaService
+@inject NavigationManager Navigation
+
+<h3>Editar Usuario</h3>
+
+@if (usuario == null)
+{
+    <p>Cargando...</p>
+}
+else
+{
+    <EditForm Model="usuario" OnValidSubmit="ActualizarUsuario">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="mb-3">
+            <label>Username</label>
+            <InputText class="form-control" @bind-Value="usuario.Username" />
+        </div>
+
+        <div class="mb-3">
+            <label>Password</label>
+            <InputText class="form-control" type="password" @bind-Value="usuario.Password" />
+        </div>
+
+        <div class="mb-3">
+            <label>Nombre</label>
+            <InputText class="form-control" @bind-Value="usuario.Nombre" />
+        </div>
+
+        <div class="mb-3">
+            <label>Apaterno</label>
+            <InputText class="form-control" @bind-Value="usuario.Apaterno" />
+        </div>
+
+        <div class="mb-3">
+            <label>Amaterno</label>
+            <InputText class="form-control" @bind-Value="usuario.Amaterno" />
+        </div>
+
+        <div class="mb-3">
+            <label>Matricula</label>
+            <InputText class="form-control" @bind-Value="usuario.Matricula" />
+        </div>
+
+        <div class="mb-3">
+            <label>Cargo</label>
+            <InputText class="form-control" @bind-Value="usuario.Cargo" />
+        </div>
+
+        <div class="mb-3">
+            <label>Role</label>
+            <InputSelect class="form-control" @bind-Value="usuario.Role">
+                <option value="">-- Selecciona un rol --</option>
+                <option value="Administrador">Administrador</option>
+                <option value="Delegado">Delegado</option>
+                <option value="Usuario">Usuario</option>
+            </InputSelect>
+        </div>
+
+        <div class="mb-3">
+            <label>Área ID</label>
+            <InputSelect class="form-control" @bind-Value="usuario.AreaId">
+                <option value="0">-- Selecciona un área --</option>
+                @if (areas != null)
+                {
+                    @foreach (var area in areas)
+                    {
+                        <option value="@area.Id">@area.des_area</option>
+                    }
+                }
+            </InputSelect>
+        </div>
+
+        <button type="submit" class="btn btn-success">Actualizar</button>
+        <button type="button" class="btn btn-secondary ms-2" @onclick="Cancelar">Cancelar</button>
+    </EditForm>
+}
+
+@code {
+    [Parameter] public int id { get; set; }
+
+    spi.Models.Usuario? usuario;
+    List<spi.Models.Area> areas = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Cargar usuario y lista de áreas
+        usuario = await UsuarioService.GetByIdAsync(id);
+        areas = await AreaService.GetAllAreaAsync();
+
+        // Si no tiene área asignada, forzamos a 0 para que muestre la opción "Selecciona un área"
+        if (usuario != null && usuario.AreaId <= 0)
+            usuario.AreaId = 0;
+    }
+
+    async Task ActualizarUsuario()
+    {
+        if (usuario == null) return;
+
+        if (usuario.AreaId <= 0)
+        {
+            // Aquí podrías mostrar un mensaje de validación
+            return;
+        }
+
+        await UsuarioService.UpdateAsync(usuario);
+        Navigation.NavigateTo("/usuarios");
+    }
+
+    void Cancelar() => Navigation.NavigateTo("/usuarios");
+
+}

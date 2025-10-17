@@ -3,6 +3,8 @@
 @inject spi.Services.Observaciones.ObservacionesService ObservacionesService
 @inject NavigationManager Navigation
 @inject IJSRuntime JS
+@inject spi.Services.Usuario.UsuarioService UsuarioService
+@inject AuthenticationStateProvider AuthStateProvider
 @using spi.Models
 
 <h3>Observaciones Pendientes</h3>
@@ -67,14 +69,18 @@ else
         try
         {
             var todas = await ObservacionesService.GetAllObservacionesAsync();
-            observacionesPendientes = todas.Where(o => o.estatus == "Pendiente").ToList();
+            observacionesPendientes = todas
+                .Where(o => o.estatus == "Pendiente")
+                .ToList();
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Error cargando pendientes: {ex.Message}");
             observacionesPendientes = new();
         }
+
     }
+
 
     private void VerEvidencias(int idObs, int proyectoId)
     {
