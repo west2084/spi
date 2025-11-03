@@ -10,7 +10,6 @@
 @inject NavigationManager Navigation
 
 
-
 @code {
     [Parameter]
     public int ObservacionId { get; set; }
@@ -18,61 +17,73 @@
     public int ProyectoId { get; set; }
 
 
-    
 }
 
 @using System.Data;
 
-<h1>Evidencias</h1>
+<div class="card shadow p-4"
+     style="background-color:#f0f0f0;color:black;border-radius:12px;">
 
-<p> Valida Evidencias</p>
-@Message
-<button class="btn btn-secondary" @onclick="Regresar">
-    ⬅ Regresar
-</button>
-<RadzenButton Text="Agregar Evidencias" Icon="grid_on" Click="@(() => createevidencias(ObservacionId))" class="mb-4 me-2" />
+    <h2 class="text-center mb-3">Gestión de Evidencias</h2>
+    <p class="text-center">Valida y administra las evidencias asociadas a las observaciones</p>
+    @Message
 
-@if (orderDetails == null)
-{
+    <div class="d-flex justify-content-between mb-3">
+        <button class="btn btn-secondary" @onclick="Regresar"
+                style="border-radius:6px;box-shadow:0 2px 6px rgba(0,0,0,0.3);">
+            ⬅ Regresar
+        </button>
 
-    <p><em>Cargando...</em></p>
-}
-else
-{
-    <RadzenDataGrid @ref="grid" Data="@orderDetails" AllowVirtualization="true" Style="height:400px"
-                    AllowFiltering="true" FilterPopupRenderMode="PopupRenderMode.OnDemand"
-                    FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
-                    LogicalFilterOperator="LogicalFilterOperator.Or"
-                    AllowSorting="true"
-                    TItem="Evidencias">
-        <Columns>
-            
-            <RadzenDataGridColumn Property="@nameof(Evidencias.NombreOriginal)" Title="Nombre Archivo">
-            </RadzenDataGridColumn>
+        <RadzenButton Text="Agregar Evidencias"
+                      Icon="add_circle"
+                      ButtonStyle="ButtonStyle.Primary"
+                      Style="background-color:#00bcd4;border:none;font-weight:bold;
+                                 border-radius:6px;box-shadow:0 4px 10px rgba(0,0,0,0.3);"
+                      Click="@(() => createevidencias(ObservacionId))" />
+    </div>
 
-            <RadzenDataGridColumn Title="Archivo">
-                <Template Context="data">
-                    <a href="@("/spi"+data.RutaArchivo)" target="_blank" download="@data.NombreOriginal">
-                        Descargar
-                    </a>
-                </Template>
-            </RadzenDataGridColumn>
+    @if (orderDetails == null)
+    {
+        <p><em>Cargando...</em></p>
+    }
+    else
+    {
+        <div style="background-color:#2c2c2c;border-radius:8px;padding:1rem;">
+            <RadzenDataGrid @ref="grid" Data="@orderDetails"
+                            AllowVirtualization="true"
+                            AllowFiltering="true"
+                            FilterPopupRenderMode="PopupRenderMode.OnDemand"
+                            FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                            LogicalFilterOperator="LogicalFilterOperator.Or"
+                            AllowSorting="true"
+                            TItem="Evidencias"
+                            Style="height:400px;color:#e0e0e0;">
+                <Columns>
+                    <RadzenDataGridColumn Property="@nameof(Evidencias.NombreOriginal)" Title="Nombre Archivo" />
+
+                    <RadzenDataGridColumn Title="Archivo">
+                        <Template Context="data">
+                            <a href="@("/spi" + data.RutaArchivo)" target="_blank" download="@data.NombreOriginal"
+                               style="color:#4dd0e1;text-decoration:none;font-weight:bold;">
+                                📂 Descargar
+                            </a>
+                        </Template>
+                    </RadzenDataGridColumn>
+
+                    <RadzenDataGridColumn Property="@nameof(Evidencias.FechaSubida)" Title="Fecha Act" />
+
+                    <RadzenDataGridColumn Title="Observación">
+                        <Template Context="data">
+                            @data.Observaciones?.cve_obs
+                        </Template>
+                    </RadzenDataGridColumn>
+                </Columns>
+            </RadzenDataGrid>
+        </div>
+    }
+</div>
 
 
-            <RadzenDataGridColumn Property="@nameof(Evidencias.FechaSubida)" Title="Fecha Act" />
-            
-            <RadzenDataGridColumn Title="Observacion">
-                <Template Context="data">
-                    @data.Observaciones?.cve_obs
-                </Template>
-            </RadzenDataGridColumn>
-            
-        </Columns>
-    </RadzenDataGrid>
-
-
-
-}
 @code {
 
 
@@ -109,7 +120,7 @@ else
 
         Navigation.NavigateTo($"/createevidencias/{id}/{ProyectoId}");
 
-        
+
     }
 
 

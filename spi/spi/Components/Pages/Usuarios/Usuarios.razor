@@ -5,70 +5,97 @@
 @inject Microsoft.JSInterop.IJSRuntime JsRuntime
 @inject NavigationManager Navigation
 
-<h3>Usuarios</h3>
 
-<button class="btn btn-primary mb-3" @onclick="NuevoUsuario">Nuevo usuario</button>
+<div class="card shadow p-4"
+     style="background-color:#f0f0f0;color:black;border-radius:12px;">
 
-@if (usuarios == null)
-{
-    <p>Cargando...</p>
-}
-else
-{
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Username</th>
-                <th>Nombre</th>
-                <th>Apaterno</th>
-                <th>Amaterno</th>
-                <th>Matricula</th>
-                <th>Cargo</th>
-                <th>Role</th>
-                <th>Área</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var u in usuarios)
-            {
-                <tr>
-                    <td>@u.Username</td>
-                    <td>@u.Nombre</td>
-                    <td>@u.Apaterno</td>
-                    <td>@u.Amaterno</td>
-                    <td>@u.Matricula</td>
-                    <td>@u.Cargo</td>
-                    <td>@u.Role</td>
-                    <td>@(u.Area?.des_area ?? "")</td>
-                    <td>
-                        <button class="btn btn-sm btn-secondary me-1" @onclick="() => EditarUsuario(u.Id)">Editar</button>
-                        <button class="btn btn-sm btn-danger" @onclick="() => EliminarUsuario(u.Id)">Eliminar</button>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
+    <h2 class="text-center mb-3">Gestión de Usuarios</h2>
+    <p class="text-center">Administra los usuarios del sistema</p>
+
+    <div class="text-start mb-3">
+        <RadzenButton Text="Nuevo Usuario"
+                      Icon="add_circle"
+                      ButtonStyle="ButtonStyle.Primary"
+                      Style="background-color:#00bcd4;border:none;font-weight:bold;
+                                 border-radius:6px;box-shadow:0 4px 10px rgba(0,0,0,0.3);"
+                      Click="@(() => Navigation.NavigateTo("/usuarios/create"))" />
+    </div>
+
+    <div style="background-color:#2c2c2c;border-radius:8px;padding:1rem;">
+        <RadzenDataGrid @ref="grid" TItem="Usuario" Data="@usuarios"
+                        AllowPaging="true" PageSize="10"
+                        AllowSorting="true" AllowFiltering="true"
+                        EditMode="DataGridEditMode.Single"
+                        RowUpdate="@OnUpdateUsuario"
+                        RowCreate="@OnCreateUsuario"
+                        RowRemove="@OnDeleteUsuario"
+                        Style="height:500px;color:#e0e0e0;">
+            <Columns>
+                <RadzenDataGridColumn TItem="Usuario" Property="Username" Title="Usuario" />
+                <RadzenDataGridColumn TItem="Usuario" Property="Nombre" Title="Nombre" />
+                <RadzenDataGridColumn TItem="Usuario" Property="Apaterno" Title="Apellido Paterno" />
+                <RadzenDataGridColumn TItem="Usuario" Property="Amaterno" Title="Apellido Materno" />
+                <RadzenDataGridColumn TItem="Usuario" Property="Matricula" Title="Matrícula" />
+                <RadzenDataGridColumn TItem="Usuario" Property="Cargo" Title="Cargo" />
+                <RadzenDataGridColumn TItem="Usuario" Property="Role" Title="Rol" />
+                <RadzenDataGridColumn TItem="Usuario" Property="Area.des_area" Title="Área" />
+
+                <RadzenDataGridColumn TItem="Usuario" Context="user" Title="Acciones" Width="180px">
+                    <Template Context="user">
+                        <RadzenButton Icon="edit"
+                                      Size="ButtonSize.Small"
+                                      Style="margin-right:5px;border-radius:4px;"
+                                      Click="@(() => Navigation.NavigateTo($"/usuarios/edit/{user.Id}"))" />
+                        <RadzenButton Icon="delete"
+                                      Size="ButtonSize.Small"
+                                      ButtonStyle="ButtonStyle.Danger"
+                                      Style="border-radius:4px;"
+                                      Click="@(() => OnDeleteUsuario(user))" />
+                    </Template>
+                    <EditTemplate Context="user">
+                        <RadzenButton Icon="save"
+                                      Size="ButtonSize.Small"
+                                      ButtonStyle="ButtonStyle.Primary"
+                                      Style="margin-right:5px;border-radius:4px;"
+                                      Click="@(() => grid.UpdateRow(user))" />
+                        <RadzenButton Icon="cancel"
+                                      Size="ButtonSize.Small"
+                                      ButtonStyle="ButtonStyle.Light"
+                                      Style="border-radius:4px;"
+                                      Click="@(() => grid.CancelEditRow(user))" />
+                    </EditTemplate>
+                </RadzenDataGridColumn>
+            </Columns>
+        </RadzenDataGrid>
+    </div>
+</div>
 
 @code {
-    List<spi.Models.Usuario> usuarios;
+    private RadzenDataGrid<Usuario> grid;
+    private List<Usuario> usuarios;
 
     protected override async Task OnInitializedAsync()
     {
         usuarios = await UsuarioService.GetAllAsync();
     }
 
-    void NuevoUsuario() => Navigation.NavigateTo("/usuarios/create");
+    async Task OnUpdateUsuario(Usuario user)
+    {
+        await UsuarioService.UpdateAsync(user);
+    }
 
-    void EditarUsuario(int id) => Navigation.NavigateTo($"/usuarios/edit/{id}");
+    async Task OnCreateUsuario(Usuario user)
+    {
+        await UsuarioService.CreateAsync(user);
+        usuarios = await UsuarioService.GetAllAsync();
+    }
 
-    async Task EliminarUsuario(int id)
+    async Task OnDeleteUsuario(Usuario user)
     {
         var confirm = await JsRuntime.InvokeAsync<bool>("confirm", "¿Eliminar usuario?");
         if (confirm)
         {
-            await UsuarioService.DeleteAsync(id);
+            await UsuarioService.DeleteAsync(user.Id);
             usuarios = await UsuarioService.GetAllAsync();
         }
     }

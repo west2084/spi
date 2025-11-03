@@ -7,7 +7,6 @@
 @inject IWebHostEnvironment env
 @using Microsoft.AspNetCore.Components.Forms
 
-
 @inject EvidenciasService EvidenciasService
 @inject FileService fileservice
 
@@ -16,40 +15,44 @@
 <div class="container ">
 
     @if (isLoading)
-{
-    <p><em>Loading...</em></p>
-}
-else
-{
+    {
+        <p><em>Loading...</em></p>
+    }
+    else
+    {   
+
+        <h3>Subir Evidencias </h3>
+
         <button class="btn btn-secondary" @onclick="Regresar">
             ⬅ Regresar
         </button>
 
-    <h3>Subir Evidencias </h3>
-    <EditForm Model="Evidencias" OnValidSubmit="SaveEvidencias">
-        <DataAnnotationsValidator />
-        <ValidationSummary class="alert alert-danger" />
-        <div class="form-control">
+        <EditForm Model="Evidencias" OnValidSubmit="SaveEvidencias">
+            <DataAnnotationsValidator />
+            <ValidationSummary class="alert alert-danger" />
+            <div class="form-control">
 
-            <label for="des_area">Nombre Archivo</label>
-            <InputText id="NombreOriginal" class="form-control" @bind-Value="Evidencias.NombreOriginal" />
+                <label for="des_area">Nombre Archivo</label>
+                <InputText id="NombreOriginal" class="form-control" @bind-Value="Evidencias.NombreOriginal" />
 
-          
 
-            
+
+
 
                 <label for="archivo">Seleccionar archivo</label>
+                <br />
                 <InputFile OnChange="UploadFile" />
 
 
-        </div>
-        <br />
-        <button type="submit" class="btn btn-primary">Guardar</button>
+            </div>
+            <br />
+            <button type="submit" class="btn btn-primary">Guardar</button>
 
-    </EditForm>
-}
+        </EditForm>
+    }
 
 </div>
+
 @code {
     [Parameter] public int ObservacionesId { get; set; }
     [Parameter] public int ProyectoId { get; set; }
@@ -69,8 +72,8 @@ else
         isLoading = false;
         var s = await EvidenciasService.GetDatosEvidenciasAsync(ObservacionesId);
         directorio = env.WebRootPath + "/" + s.Proyecto.des_proy + "/" + s.Area.siglas_area;
-        dir =  "/" + s.Proyecto.des_proy + "/" + s.Area.siglas_area;
-        
+        dir = "/" + s.Proyecto.des_proy + "/" + s.Area.siglas_area;
+
     }
 
     private async Task SaveEvidencias()
@@ -80,7 +83,7 @@ else
 
 
         //validar carpeta
-        fileservice.GuardarArchivoAsync(directorio,archivoSeleccionado.Name,"");
+        fileservice.GuardarArchivoAsync(directorio, archivoSeleccionado.Name, "");
 
         // Ruta final
         var filePath = Path.Combine(directorio, archivoSeleccionado.Name);

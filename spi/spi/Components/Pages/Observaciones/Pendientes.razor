@@ -1,86 +1,78 @@
 ﻿@rendermode InteractiveServer
 @page "/observaciones/pendientes"
 @inject spi.Services.Observaciones.ObservacionesService ObservacionesService
+@inject AuthenticationStateProvider AuthStateProvider
 @inject NavigationManager Navigation
 @inject IJSRuntime JS
-@inject spi.Services.Usuario.UsuarioService UsuarioService
-@inject AuthenticationStateProvider AuthStateProvider
-@using spi.Models
+@attribute [Authorize]
 
-<h3>Observaciones Pendientes</h3>
+<div class="card shadow p-4"
+     style="background-color:#f0f0f0f0;color:black;border-radius:12px;">
 
-@if (observacionesPendientes == null)
-{
-    <p><em>Cargando...</em></p>
-}
-else if (!observacionesPendientes.Any())
-{
-    <div class="alert alert-info">No hay observaciones pendientes.</div>
-}
-else
-{
-    <table class="table table-hover align-middle">
-        <thead class="table-dark">
-            <tr>
-                <th>Proyecto</th>
-                <th>Indicador</th>
-                <th>Descripción</th>
-                <th>Fecha Observación</th>
-                <th>Estatus</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var obs in observacionesPendientes)
-            {
-                <tr>
-                    <td>@obs.Proyecto?.des_proy</td>
-                    <td>@obs.indicador</td>
-                    <td>@obs.des_obs</td>
-                    <td>@obs.fecha_obs.ToShortDateString()</td>
-                    <td>
-                        <span class="badge bg-warning text-dark">@obs.estatus</span>
-                    </td>
-                    <td>
-                        <button class="btn btn-sm btn-primary me-1" @onclick="() => VerEvidencias(obs.Id, obs.ProyectoId)">
-                            Ver Evidencias
-                        </button>
-                        <button class="btn btn-sm btn-secondary me-1" @onclick="() => EditarObservacion(obs.Id)">
-                            Editar
-                        </button>
-                        <button class="btn btn-sm btn-success me-1" @onclick="() => EliminarObservacion(obs.Id)">
-                            Terminar
-                        </button>
-                        <button class="btn btn-sm btn-danger" @onclick='() => CambiarEstatus(obs.Id, "Cancelado")'>
-                            Cancelar
-                        </button>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
+    <h2 class="text-center mb-3">Observaciones Pendientes</h2>
+    <p class="text-center">Administra y da seguimiento a las observaciones en estado pendiente</p>
+
+    <div style="background-color:#2c2c2c;border-radius:8px;padding:1rem;">
+        <RadzenDataGrid @ref="grid" TItem="Observaciones" Data="@observacionesPendientes"
+                        AllowPaging="true" PageSize="10"
+                        AllowSorting="true" AllowFiltering="true"
+                        AllowColumnResize="true"
+                        Style="height:500px;color:#e0e0e0;">
+            <Columns>
+                <RadzenDataGridColumn TItem="Observaciones" Property="Proyecto.des_proy" Title="Proyecto" />
+                <RadzenDataGridColumn TItem="Observaciones" Property="indicador" Title="Indicador" />
+                <RadzenDataGridColumn TItem="Observaciones" Property="des_obs" Title="Descripción" />
+                <RadzenDataGridColumn TItem="Observaciones" Property="fecha_obs" Title="Fecha Observación"
+                                      FormatString="{0:dd/MM/yyyy}" />
+
+                <RadzenDataGridColumn TItem="Observaciones" Property="estatus" Title="Estatus" Width="120px">
+                    <Template Context="obs">
+                        <RadzenBadge Text="@obs.estatus" Style="margin:2px;font-weight:bold;"
+                                     Color="@(obs.estatus == "Pendiente" ? "Warning" :
+                                                                                                                                                                                                              obs.estatus == "Terminado" ? "Success" : "Danger")" />
+                    </Template>
+                </RadzenDataGridColumn>
+
+                <RadzenDataGridColumn TItem="Observaciones" Context="obs" Title="Acciones" Width="450px">
+                    <Template Context="obs">
+                        <RadzenButton Text="Evidencias" Icon="visibility"
+                                      Size="ButtonSize.Small" ButtonStyle="ButtonStyle.Primary"
+                                      Style="margin-right:5px;border-radius:4px;"
+                                      Click="@(() => VerEvidencias(obs.Id, obs.ProyectoId))" />
+
+                        <RadzenButton Text="Editar" Icon="edit"
+                                      Size="ButtonSize.Small" ButtonStyle="ButtonStyle.Primary"
+                                      Style="margin-right:5px;border-radius:4px;"
+                                      Click="@(() => EditarObservacion(obs.Id))" />
+
+                        <RadzenButton Text="Terminar" Icon="check_circle"
+                                      Size="ButtonSize.Small" ButtonStyle="ButtonStyle.Success"
+                                      Style="margin-right:5px;border-radius:4px;"
+                                      Click="@(() => CambiarEstatus(obs.Id, "Terminado"))" />
+
+                        <RadzenButton Text="Cancelar" Icon="cancel"
+                                      Size="ButtonSize.Small" ButtonStyle="ButtonStyle.Danger"
+                                      Style="border-radius:4px;"
+                                      Click="@(() => CambiarEstatus(obs.Id, "Cancelado"))" />
+                    </Template>
+                </RadzenDataGridColumn>
+            </Columns>
+        </RadzenDataGrid>
+    </div>
+</div>
 
 @code {
+    private RadzenDataGrid<Observaciones> grid;
     private List<Observaciones> observacionesPendientes;
 
     protected override async Task OnInitializedAsync()
     {
-        try
-        {
-            var todas = await ObservacionesService.GetAllObservacionesAsync();
-            observacionesPendientes = todas
-                .Where(o => o.estatus == "Pendiente")
-                .ToList();
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error cargando pendientes: {ex.Message}");
-            observacionesPendientes = new();
-        }
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
 
+        // Pedimos al servicio las pendientes filtradas por usuario/rol
+        observacionesPendientes = await ObservacionesService.GetObservacionesPendientesAsync(user);
     }
-
 
     private void VerEvidencias(int idObs, int proyectoId)
     {
@@ -100,33 +92,13 @@ else
             obs.estatus = nuevoEstatus;
             await ObservacionesService.UpdateObservacionesAsync(obs);
 
-            // Refrescar lista
+            // refrescar lista
             observacionesPendientes = observacionesPendientes
                 .Where(o => o.estatus == "Pendiente")
                 .ToList();
-        }
-    }
 
-    private async Task EliminarObservacion(int id)
-    {
-        bool confirm = await JS.InvokeAsync<bool>("confirm", "¿Seguro que deseas eliminar esta observación?");
-        if (!confirm)
-            return;
-
-        try
-        {
-            await ObservacionesService.DeleteObservacionesAsync(id);
-
-            // Actualizar la lista en pantalla sin recargar toda la página
-            observacionesPendientes = observacionesPendientes.Where(o => o.Id != id).ToList();
-
-            // Mensaje visual rápido
-            await JS.InvokeVoidAsync("alert", "Observación eliminada correctamente.");
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error al eliminar observación: {ex.Message}");
-            await JS.InvokeVoidAsync("alert", "Ocurrió un error al eliminar la observación.");
+            await grid.Reload();
+            StateHasChanged();
         }
     }
 }

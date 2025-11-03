@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+Ôªøusing Microsoft.EntityFrameworkCore;
 using Radzen;
 using spi.Components;
 using spi.Data;
@@ -31,7 +31,7 @@ builder.Services.AddRadzenComponents();
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
-        options.LoginPath = "/login"; // redirige aquÌ si no est· autenticado
+        options.LoginPath = "/login"; // redirige aqu√≠ si no est√° autenticado
         options.AccessDeniedPath = "/denegado";
 
         options.ExpireTimeSpan = TimeSpan.FromHours(1);
@@ -45,7 +45,7 @@ builder.Services.AddScoped<FileService>();
 builder.Services.AddScoped<UsuarioService>();
 builder.Services.AddHttpClient();
 
-//autentificaciÛn
+//autentificaci√≥n
 builder.Services.AddAuthorizationCore();
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
 builder.Services.AddCascadingAuthenticationState();
@@ -76,25 +76,27 @@ app.MapGet("/login-handler", async context =>
 {
     var username = context.Request.Query["user"];
     var role = context.Request.Query["role"];
+    var areaId = context.Request.Query["areaId"];
 
     var claims = new List<Claim>
     {
         new Claim(ClaimTypes.Name, username!),
-        new Claim(ClaimTypes.Role, role!)
+        new Claim(ClaimTypes.Role, role!),
+        new Claim("AreaId", areaId!) // üëà nuevo claim
     };
 
     var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
     var principal = new ClaimsPrincipal(identity);
 
     await context.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
-    //cuando se publique hay que canbiar la direcciÛn anteponiendo el nombre del proyecto
     context.Response.Redirect("/");
 });
+
 
 app.MapGet("/logout", async context =>
 {
     await context.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-    context.Response.Redirect("/spi/login");
+    context.Response.Redirect("/login");
 });
 
 

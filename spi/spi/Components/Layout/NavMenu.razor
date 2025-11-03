@@ -1,45 +1,64 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
+﻿@using System.Security.Claims
+@inject AuthenticationStateProvider AuthStateProvider
+
+@code {
+    private ClaimsPrincipal user;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        user = authState.User;
+    }
+}
+
+<div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href="">spi</a>
+        <a class="navbar-brand" href="">SPI</a>
     </div>
 </div>
 
 <input type="checkbox" title="Navigation menu" class="navbar-toggler" />
 
-<div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
+<div class="nav-scrollable">
     <nav class="flex-column">
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Inicio
+                <i class="bi bi-house-door-fill"></i> Inicio
             </NavLink>
         </div>
-
-        
 
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="proyecto">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Proyecto
+                <i class="bi bi-folder-fill"></i> Proyecto
             </NavLink>
         </div>
 
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="area">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> area
-            </NavLink>
-        </div>
+        @* Solo Admin y Delegado ven Áreas *@
+        @if (user.IsInRole("Administrador") || user.IsInRole("Delegado"))
+        {
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="area">
+                    <i class="bi bi-diagram-3-fill"></i> Área
+                </NavLink>
+            </div>
+        }
 
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="/observaciones/pendientes" Match="NavLinkMatch.Prefix">
-                <span class="oi oi-list"></span> Observaciones Pendientes
+                <i class="bi bi-list-check"></i> Obs. Pendientes
             </NavLink>
         </div>
 
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="usuarios">
-                <span class="bi bi-people-nav-menu" aria-hidden="true"></span> Usuarios
-            </NavLink>
-        </div>
-
+        @* Solo Admin ve Usuarios *@
+        @if (user.IsInRole("Administrador"))
+        {
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="usuarios">
+                    <i class="bi bi-people-fill"></i> Usuarios
+                </NavLink>
+            </div>
+        }
     </nav>
 </div>
+
 

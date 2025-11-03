@@ -1,5 +1,4 @@
-﻿
-@using Microsoft.AspNetCore.Authentication;
+﻿@using Microsoft.AspNetCore.Authentication;
 @using Microsoft.AspNetCore.Antiforgery;
 
 
@@ -11,37 +10,108 @@
 @inject spi.Services.Usuario.UsuarioService UsuarioService
 @rendermode InteractiveServer
 
-<h3>Iniciar sesión</h3>
+<div class="container"
+     style="min-height:60vh;display:flex;align-items:center;justify-content:center;border-radius:12px;
+            background:linear-gradient(135deg,#2196f3,#00bcd4);">
+    <div class="card shadow p-4"
+         style="max-width:420px;margin:auto;margin-top:60px;border-radius:12px;
+            box-shadow:0 8px 20px rgba(0,0,0,0.25);
+            animation:fadeIn 0.6s ease;">
 
-@if (!string.IsNullOrEmpty(Error))
-{
-    <p style="color:red">@Error</p>
-}
+        <h3 class="text-center mb-3" style="color:#0a74a7;font-weight:600;">Iniciar sesión</h3>
 
-<EditForm Model="Model" OnValidSubmit="OnSubmitAsync">
-    <InputText @bind-Value="Model.Usuario" placeholder="Usuario" />
-    <InputText @bind-Value="Model.Contrasena" type="password" placeholder="Contraseña" />
-    <button type="submit">Entrar</button>
-</EditForm>
+        @if (!string.IsNullOrEmpty(Error))
+        {
+            <div class="alert alert-danger" role="alert">@Error</div>
+        }
+
+        <EditForm Model="Model" OnValidSubmit="OnSubmitAsync">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <div class="mb-3">
+                <label class="form-label">Usuario</label>
+                <InputText class="form-control"
+                           style="border-radius:6px;border:1px solid #b2ebf2;"
+                           @bind-Value="Model.Usuario"
+                           placeholder="Ingresa tu usuario" />
+            </div>
+
+            <div class="mb-1">
+                <label class="form-label">Contraseña</label>
+                <div class="input-group">
+                    <InputText class="form-control"
+                               style="border-radius:6px;border:1px solid #b2ebf2;"
+                               @bind-Value="Model.Contrasena"
+                               type="@passwordInputType"
+                               placeholder="Ingresa tu contraseña" />
+                    <button type="button"
+                            class="btn btn-outline-secondary"
+                            style="border-color:#00bcd4;color:#00bcd4;"
+                            @onclick="TogglePassword">
+                        @(passwordInputType == "password" ? "Mostrar" : "Ocultar")
+                    </button>
+                </div>
+            </div>
+
+            <br />
+
+            <button type="submit"
+                    class="btn btn-primary w-100"
+                    style="background-color:#00bcd4;border:none;font-weight:bold;
+               transition:background 0.3s;"
+                    onmouseover="this.style.backgroundColor='#0097a7'"
+                    onmouseout="this.style.backgroundColor='#00bcd4'">
+                @(isSubmitting ? "Ingresando..." : "Entrar")
+            </button>
+        </EditForm>
+    </div>
+</div>
+
+<style>
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
 
 @code {
     private LoginModel Model = new();
     private string Error;
+    private bool isSubmitting = false;
+    private string passwordInputType = "password";
 
     private async Task OnSubmitAsync()
     {
-        var user = await UsuarioService.ValidarUsuarioAsync(Model.Usuario, Model.Contrasena);
+        Error = null;
+        isSubmitting = true;
 
-        if (user is not null)
+        var result = await UsuarioService.ValidarUsuarioAsync(Model.Usuario, Model.Contrasena);
+
+        if (result.user is not null)
         {
-            // Redirigir a un método de logout/login fuera del ciclo de Blazor
-            var uri = $"login-handler?user={Uri.EscapeDataString(user.Username)}&role={Uri.EscapeDataString(user.Role ?? "")}";
-            Navigation.NavigateTo(uri, forceLoad: true); // ⚠️ fuerza la recarga fuera del DOM Blazor
+            var uri = $"login-handler?user={Uri.EscapeDataString(result.user.Username)}" +
+            $"&role={Uri.EscapeDataString(result.user.Role ?? "")}" + $"&areaId={result.user.AreaId}";
+            Navigation.NavigateTo(uri, forceLoad: true);
         }
         else
         {
-            Error = "Credenciales inválidas";
+            // Mensaje específico desde el servicio: "El usuario no existe." o "La contraseña es incorrecta."
+            Error = string.IsNullOrWhiteSpace(result.error) ? "Credenciales inválidas." : result.error;
+            isSubmitting = false;
         }
+    }
+
+    private void TogglePassword()
+    {
+        passwordInputType = passwordInputType == "password" ? "text" : "password";
     }
 
     public class LoginModel

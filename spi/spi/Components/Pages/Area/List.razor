@@ -9,40 +9,51 @@
 @inject IJSRuntime JS
 @inject NavigationManager Navigation
 
-
 @using System.Data;
 
-<h1>Areas</h1>
 
-<p> Valida Areas</p>
-@Message
+<div class="card shadow p-4"
+     style="background-color:#f0f0f0;color:black;border-radius:12px;">
 
-<RadzenButton Text="Agregar Areas" Icon="grid_on" Click="@(() => createproy())" class="mb-4 me-2" />
+    <h2 class="text-center mb-3">Gestión de Áreas</h2>
+    <p class="text-center">Valida y administra las áreas registradas</p>
+    @Message
 
-@if (orderDetails == null)
-{
+    <div class="text-start mb-3">
+        <RadzenButton Text="Agregar Área"
+                      Icon="add_circle"
+                      ButtonStyle="ButtonStyle.Primary"
+                      Style="background-color:#00bcd4;border:none;font-weight:bold;
+                                 border-radius:6px;box-shadow:0 4px 10px rgba(0,0,0,0.3);"
+                      Click="@(() => createproy())" />
+    </div>
 
-    <p><em>Cargando...</em></p>
-}
-else
-{
-    <RadzenDataGrid @ref="grid" Data="@orderDetails" AllowVirtualization="true" Style="height:400px"
-                    AllowFiltering="true" FilterPopupRenderMode="PopupRenderMode.OnDemand"
-                    FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
-                    LogicalFilterOperator="LogicalFilterOperator.Or"
-                    AllowSorting="true"
-                    TItem="Area">
-        <Columns>
-            <RadzenDataGridColumn Property="@nameof(Area.Id)" Title="Id" />
-            <RadzenDataGridColumn Property="@nameof(Area.des_area)" Title="Area">
-            </RadzenDataGridColumn>
-            <RadzenDataGridColumn Property="@nameof(Area.siglas_area)" Title="Siglas" />
-        </Columns>
-    </RadzenDataGrid>
+    @if (orderDetails == null)
+    {
+        <p><em>Cargando...</em></p>
+    }
+    else
+    {
+        <div style="background-color:#2c2c2c;border-radius:8px;padding:1rem;">
+            <RadzenDataGrid @ref="grid" Data="@orderDetails"
+                            AllowVirtualization="true"
+                            AllowFiltering="true"
+                            FilterPopupRenderMode="PopupRenderMode.OnDemand"
+                            FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                            LogicalFilterOperator="LogicalFilterOperator.Or"
+                            AllowSorting="true"
+                            TItem="Area"
+                            Style="height:400px;color:#e0e0e0;">
+                <Columns>
+                    <RadzenDataGridColumn Property="@nameof(Area.Id)" Title="Id" />
+                    <RadzenDataGridColumn Property="@nameof(Area.des_area)" Title="Área" />
+                    <RadzenDataGridColumn Property="@nameof(Area.siglas_area)" Title="Siglas" />
+                </Columns>
+            </RadzenDataGrid>
+        </div>
+    }
+</div>
 
-
-
-}
 @code {
 
 
@@ -81,9 +92,6 @@ else
 
 
     }
-
-
-
 
 
 

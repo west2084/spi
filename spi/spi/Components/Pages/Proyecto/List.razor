@@ -1,5 +1,4 @@
-﻿
-@rendermode InteractiveServer
+﻿@rendermode InteractiveServer
 @page "/Proyecto"
 @inject Services.Proyecto.ProyectoService ProyectoService
 @using spi;
@@ -10,87 +9,100 @@
 @inject IJSRuntime JS
 @inject NavigationManager Navigation
 
-
 @using System.Data;
 
-<h1>Gestión de Proyectos</h1>
+<div class="card shadow p-4"
+     style="background-color:#f0f0f0;color:black;border-radius:12px;">
 
-<p> Valida Proyetos</p>
-@Message
+    <h2 class="text-center mb-3">Gestión de Proyectos</h2>
+    <p class="text-center">Valida y administra los proyectos registrados</p>
+    @Message
 
-<RadzenButton Text="Agregar Proyecto" Icon="grid_on" Click="@(() => createproy())" class="mb-4 me-2" />
+    <div class="text-start mb-3">
+        <RadzenButton Text="Agregar Proyecto"
+                      Icon="add_circle"
+                      ButtonStyle="ButtonStyle.Primary"
+                      Style="background-color:#00bcd4;border:none;font-weight:bold;
+                                 border-radius:6px;box-shadow:0 4px 10px rgba(0,0,0,0.3);"
+                      Click="@(() => createproy())" />
+    </div>
 
-@if (orderDetails == null)
-{
-    
-    <p><em>Cargando...</em></p>
-}
-else
-{
-    <RadzenDataGrid @ref="grid" Data="@orderDetails" AllowVirtualization="true" Style="height:400px" 
-                    AllowFiltering="true" FilterPopupRenderMode="PopupRenderMode.OnDemand"
-                    FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
-                    LogicalFilterOperator="LogicalFilterOperator.Or"
-                    AllowSorting="true"
-                    TItem="Proyecto"
-                    >
-        <Columns>
-            
-            <RadzenDataGridColumn Property="@nameof(Proyecto.des_proy)" Title="Proyecto">
-            </RadzenDataGridColumn>
-            <RadzenDataGridColumn Property="@nameof(Proyecto.tipo_proy)"  Title="Tipo"   />
-              <RadzenDataGridColumn Title="Observaciones">
-                       <Template Context="item">
-                <RadzenButton Icon="visibility"
-                              ButtonStyle="ButtonStyle.Primary"
-                              Size="ButtonSize.Small"
-                              Click="@(() => IrADetalle(item.Id))" />
-                              </Template Context="item">
-            </RadzenDataGridColumn>
-        </Columns>
-    </RadzenDataGrid>
+    @if (orderDetails == null)
+    {
+        <p><em>Cargando...</em></p>
+    }
+    else
+    {
+        <div style="background-color:#2c2c2c;border-radius:8px;padding:1rem;">
+            <RadzenDataGrid @ref="grid" Data="@orderDetails"
+                            AllowVirtualization="true"
+                            AllowFiltering="true"
+                            FilterPopupRenderMode="PopupRenderMode.OnDemand"
+                            FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                            LogicalFilterOperator="LogicalFilterOperator.Or"
+                            AllowSorting="true"
+                            TItem="Proyecto"
+                            Style="height:400px;color:#e0e0e0;">
+                <Columns>
+                    <RadzenDataGridColumn Property="@nameof(Proyecto.des_proy)" Title="Proyecto" />
+                    <RadzenDataGridColumn Property="@nameof(Proyecto.tipo_proy)" Title="Tipo" />
+                    <RadzenDataGridColumn Title="Observaciones">
+                        <Template Context="item">
+                            <RadzenButton Icon="visibility"
+                                          ButtonStyle="ButtonStyle.Secondary"
+                                          Size="ButtonSize.Small"
+                                          Style="background-color:#4dd0e1;color:#1e1e1e;
+                                                                     border:none;border-radius:4px;
+                                                                     transition:background 0.3s;"
+                                          onmouseover="this.style.backgroundColor='#26c6da'"
+                                          onmouseout="this.style.backgroundColor='#4dd0e1'"
+                                          Click="@(() => IrADetalle(item.Id))" />
+                        </Template>
+                    </RadzenDataGridColumn>
+                </Columns>
+            </RadzenDataGrid>
+        </div>
+    }
+</div>
+
+@code {
 
 
-
-}
-    @code {
-
-
-        List<Proyecto> orderDetails;
+    List<Proyecto> orderDetails;
     RadzenDataGrid<Proyecto> grid;
 
 
 
-        public IEnumerable<Models.Proyecto> proyecto { get; set; }
+    public IEnumerable<Models.Proyecto> proyecto { get; set; }
 
-        public string Message { get; set; }
+    public string Message { get; set; }
 
 
 
-        protected override async Task OnInitializedAsync()
-        {
+    protected override async Task OnInitializedAsync()
+    {
 
         try
         {
 
-            orderDetails= await ProyectoService.GetAllProyectosAsync();
+            orderDetails = await ProyectoService.GetAllProyectosAsync();
 
         }
         catch (Exception e)
         {
             Message = e.Message;
         }
-        }
+    }
 
 
-        private void createproy()
-        {
+    private void createproy()
+    {
         // Lógica de abrir modal o lo que necesites
 
         Navigation.NavigateTo("/createproy");
 
-        
-        }
+
+    }
 
 
     void IrADetalle(int id)
@@ -98,7 +110,7 @@ else
         Navigation.NavigateTo($"/observaciones/{id}");
     }
 
-    
+
 
 
 }

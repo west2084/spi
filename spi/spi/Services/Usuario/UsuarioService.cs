@@ -15,11 +15,19 @@ namespace spi.Services.Usuario
             _context = context;
         }
 
-        public async Task<Models.Usuario?> ValidarUsuarioAsync(string usuario, string contrasena)
+        public async Task<(Models.Usuario? user, string error)> ValidarUsuarioAsync(string username, string password)
         {
-            return await _context.Usuarios
-                .FirstOrDefaultAsync(u => u.Username == usuario && u.Password == contrasena);
+            var usuario = await _context.Usuarios.FirstOrDefaultAsync(u => u.Username == username);
+
+            if (usuario == null)
+                return (null, "El usuario no existe.");
+
+            if (usuario.Password != password)
+                return (null, "La contraseña es incorrecta.");
+
+            return (usuario, "");
         }
+
 
         // CRUD: Listar todos (incluye Area)
         public async Task<List<Models.Usuario>> GetAllAsync()
