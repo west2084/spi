@@ -60,8 +60,6 @@ builder.Services.ConfigureApplicationCookie(options =>
 
 var app = builder.Build();
 
-//
-
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -82,7 +80,7 @@ app.MapGet("/login-handler", async context =>
     {
         new Claim(ClaimTypes.Name, username!),
         new Claim(ClaimTypes.Role, role!),
-        new Claim("AreaId", areaId!) // 👈 nuevo claim
+        new Claim("AreaId", areaId!) // nuevo claim
     };
 
     var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);

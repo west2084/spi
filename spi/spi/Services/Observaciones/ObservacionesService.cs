@@ -37,8 +37,9 @@ namespace spi.Services.Observaciones
             var areaClaim = user.FindFirst("AreaId")?.Value;
             int.TryParse(areaClaim, out var areaId);
 
-            // Delegado: ve todas las observaciones del proyecto
-            if (string.Equals(role, "Delegado", StringComparison.OrdinalIgnoreCase))
+            // Delegado y Administrador: ven todas las observaciones del proyecto
+            if (string.Equals(role, "Delegado", StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(role, "Administrador", StringComparison.OrdinalIgnoreCase))
             {
                 return await _context.Observaciones
                     .Include(o => o.Proyecto)
@@ -48,9 +49,8 @@ namespace spi.Services.Observaciones
                     .ToListAsync();
             }
 
-            // Usuario y Administrador: sólo observaciones del proyecto asociadas a su área
-            if (string.Equals(role, "Usuario", StringComparison.OrdinalIgnoreCase) ||
-                string.Equals(role, "Administrador", StringComparison.OrdinalIgnoreCase))
+            // Usuario: sólo observaciones del proyecto asociadas a su área
+            if (string.Equals(role, "Usuario", StringComparison.OrdinalIgnoreCase))
             {
                 if (areaId <= 0)
                     return new List<spi.Models.Observaciones>();
@@ -120,8 +120,8 @@ namespace spi.Services.Observaciones
                 .Include(oa => oa.Observaciones)
                 .AsQueryable();
 
-            // Si no es Delegado, limitar a su área
-            if (!string.Equals(role, "Delegado", StringComparison.OrdinalIgnoreCase))
+            // Sólo Usuario se limita a su área. Administrador y Delegado ven todas
+            if (string.Equals(role, "Usuario", StringComparison.OrdinalIgnoreCase))
             {
                 if (areaId <= 0) return new List<subconsulta>();
                 query = query.Where(oa => oa.AreaId == areaId);
@@ -166,8 +166,8 @@ namespace spi.Services.Observaciones
             return list.ToList();
         }
 
-        // Filtrado por rol y área: Usuario y Administrador solo ven las observaciones vinculadas a su área;
-        // Delegado ve todas.
+        // Filtrado por rol y área: Usuario solo ve las observaciones vinculadas a su área
+        // Delegado y Administrador ven todas
         public async Task<List<spi.Models.Observaciones>> GetObservacionesAsync(ClaimsPrincipal? user)
         {
             if (user is null)
@@ -177,8 +177,9 @@ namespace spi.Services.Observaciones
             var areaClaim = user.FindFirst("AreaId")?.Value;
             int.TryParse(areaClaim, out var areaId);
 
-            // Delegado: ve todas las observaciones
-            if (string.Equals(role, "Delegado", StringComparison.OrdinalIgnoreCase))
+            // Delegado y Administrador: ven todas las observaciones
+            if (string.Equals(role, "Delegado", StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(role, "Administrador", StringComparison.OrdinalIgnoreCase))
             {
                 return await _context.Observaciones
                     .Include(o => o.Proyecto)
@@ -188,9 +189,8 @@ namespace spi.Services.Observaciones
                     .ToListAsync();
             }
 
-            // Usuario y Administrador: solo observaciones asociadas a su área (tabla puente)
-            if (string.Equals(role, "Usuario", StringComparison.OrdinalIgnoreCase) ||
-                string.Equals(role, "Administrador", StringComparison.OrdinalIgnoreCase))
+            // Usuario: solo observaciones asociadas a su área
+            if (string.Equals(role, "Usuario", StringComparison.OrdinalIgnoreCase))
             {
                 if (areaId <= 0)
                     return new List<spi.Models.Observaciones>();
@@ -203,8 +203,6 @@ namespace spi.Services.Observaciones
                     .AsNoTracking()
                     .ToListAsync();
             }
-
-            // Roles no esperados: devolver vacío
             return new List<spi.Models.Observaciones>();
         }
 
@@ -222,8 +220,9 @@ namespace spi.Services.Observaciones
                     .ThenInclude(oa => oa.Area)
                 .Where(o => o.estatus == "Pendiente");
 
-            // Delegado: ve todas las pendientes
-            if (string.Equals(role, "Delegado", StringComparison.OrdinalIgnoreCase))
+            // Delegado y Administrador: ven todas las pendientes
+            if (string.Equals(role, "Delegado", StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(role, "Administrador", StringComparison.OrdinalIgnoreCase))
             {
                 return await baseQuery
                     .Include(o => o.Proyecto)
@@ -231,9 +230,8 @@ namespace spi.Services.Observaciones
                     .ToListAsync();
             }
 
-            // Usuario y Administrador: sólo pendientes de su área
-            if (string.Equals(role, "Usuario", StringComparison.OrdinalIgnoreCase) ||
-                string.Equals(role, "Administrador", StringComparison.OrdinalIgnoreCase))
+            // Usuario: sólo pendientes de su área
+            if (string.Equals(role, "Usuario", StringComparison.OrdinalIgnoreCase))
             {
                 if (areaId <= 0)
                     return new List<spi.Models.Observaciones>();
@@ -269,16 +267,14 @@ namespace spi.Services.Observaciones
                 .Where(o => o.ProyectoId == proyectoId)
                 .AsQueryable();
 
-            // Filtrado por rol
-            if (string.Equals(role, "Usuario", StringComparison.OrdinalIgnoreCase) ||
-                string.Equals(role, "Administrador", StringComparison.OrdinalIgnoreCase))
+            // Filtrado por rol: sólo Usuario se filtra por área. Administrador y Delegado ven todo
+            if (string.Equals(role, "Usuario", StringComparison.OrdinalIgnoreCase))
             {
                 if (areaId <= 0)
                     return new List<spi.Models.Observaciones>();
 
                 query = query.Where(o => o.ObservacionAreas.Any(oa => oa.AreaId == areaId));
             }
-            // Delegado ve todas, no se filtra por área
 
             // Filtrado por término de búsqueda
             if (!string.IsNullOrWhiteSpace(searchTerm))
@@ -288,8 +284,8 @@ namespace spi.Services.Observaciones
                     o.des_obs.ToLower().Contains(searchTerm) ||
                     o.indicador.ToLower().Contains(searchTerm) ||
                     o.estatus.ToLower().Contains(searchTerm) ||
-                    o.Proyecto.des_proy.ToLower().Contains(searchTerm) ||   // 👈 nombre del proyecto
-                    o.Proyecto.tipo_proy.ToLower().Contains(searchTerm) ||  // 👈 tipo de proyecto
+                    o.Proyecto.des_proy.ToLower().Contains(searchTerm) ||   // nombre del proyecto
+                    o.Proyecto.tipo_proy.ToLower().Contains(searchTerm) ||  // tipo de proyecto
                     o.ObservacionAreas.Any(oa => oa.Area.des_area.ToLower().Contains(searchTerm) ||
                                                  oa.Area.siglas_area.ToLower().Contains(searchTerm))
                 );

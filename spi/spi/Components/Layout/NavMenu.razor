@@ -2,7 +2,7 @@
 @inject AuthenticationStateProvider AuthStateProvider
 
 @code {
-    private ClaimsPrincipal user;
+    private ClaimsPrincipal? user;
 
     protected override async Task OnInitializedAsync()
     {
@@ -27,14 +27,18 @@
             </NavLink>
         </div>
 
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="proyecto">
-                <i class="bi bi-folder-fill"></i> Proyecto
-            </NavLink>
-        </div>
+        @* Ocultar "Proyecto" para Delegado *@
+        @if (user?.IsInRole("Delegado") != true)
+        {
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="proyecto">
+                    <i class="bi bi-folder-fill"></i> Proyecto
+                </NavLink>
+            </div>
+        }
 
-        @* Solo Admin y Delegado ven Áreas *@
-        @if (user.IsInRole("Administrador") || user.IsInRole("Delegado"))
+        @* Solo Administrador ve "Área" *@
+        @if (user?.IsInRole("Administrador") == true)
         {
             <div class="nav-item px-3">
                 <NavLink class="nav-link" href="area">
@@ -49,8 +53,8 @@
             </NavLink>
         </div>
 
-        @* Solo Admin ve Usuarios *@
-        @if (user.IsInRole("Administrador"))
+        @* Solo Administrador ve Usuarios *@
+        @if (user?.IsInRole("Administrador") == true)
         {
             <div class="nav-item px-3">
                 <NavLink class="nav-link" href="usuarios">
@@ -60,5 +64,3 @@
         }
     </nav>
 </div>
-
-

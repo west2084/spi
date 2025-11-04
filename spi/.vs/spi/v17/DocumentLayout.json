@@ -3,24 +3,20 @@
   "WorkspaceRootPath": "C:\\Users\\jmlrs\\Documents\\Servicio social\\Trabajos\\spi\\spi\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{4DC31253-9D0D-411C-BD88-9F6307D3B4BE}|spi\\spi.csproj|c:\\users\\jmlrs\\documents\\servicio social\\trabajos\\spi\\spi\\spi\\components\\pages\\observaciones\\pendientes.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{4DC31253-9D0D-411C-BD88-9F6307D3B4BE}|spi\\spi.csproj|solutionrelative:spi\\components\\pages\\observaciones\\pendientes.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{4DC31253-9D0D-411C-BD88-9F6307D3B4BE}|spi\\spi.csproj|c:\\users\\jmlrs\\documents\\servicio social\\trabajos\\spi\\spi\\spi\\components\\pages\\observaciones\\list.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{4DC31253-9D0D-411C-BD88-9F6307D3B4BE}|spi\\spi.csproj|solutionrelative:spi\\components\\pages\\observaciones\\list.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{4DC31253-9D0D-411C-BD88-9F6307D3B4BE}|spi\\spi.csproj|c:\\users\\jmlrs\\documents\\servicio social\\trabajos\\spi\\spi\\spi\\components\\pages\\home.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{4DC31253-9D0D-411C-BD88-9F6307D3B4BE}|spi\\spi.csproj|solutionrelative:spi\\components\\pages\\home.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4DC31253-9D0D-411C-BD88-9F6307D3B4BE}|spi\\spi.csproj|c:\\users\\jmlrs\\documents\\servicio social\\trabajos\\spi\\spi\\spi\\components\\layout\\navmenu.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{4DC31253-9D0D-411C-BD88-9F6307D3B4BE}|spi\\spi.csproj|solutionrelative:spi\\components\\layout\\navmenu.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{4DC31253-9D0D-411C-BD88-9F6307D3B4BE}|spi\\spi.csproj|c:\\users\\jmlrs\\documents\\servicio social\\trabajos\\spi\\spi\\spi\\services\\observaciones\\observacionesservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{4DC31253-9D0D-411C-BD88-9F6307D3B4BE}|spi\\spi.csproj|solutionrelative:spi\\services\\observaciones\\observacionesservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{4DC31253-9D0D-411C-BD88-9F6307D3B4BE}|spi\\spi.csproj|c:\\users\\jmlrs\\documents\\servicio social\\trabajos\\spi\\spi\\spi\\components\\layout\\navmenu.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{4DC31253-9D0D-411C-BD88-9F6307D3B4BE}|spi\\spi.csproj|solutionrelative:spi\\components\\layout\\navmenu.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+      "AbsoluteMoniker": "D:0:0:{4DC31253-9D0D-411C-BD88-9F6307D3B4BE}|spi\\spi.csproj|c:\\users\\jmlrs\\documents\\servicio social\\trabajos\\spi\\spi\\spi\\components\\pages\\observaciones\\pendientes.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{4DC31253-9D0D-411C-BD88-9F6307D3B4BE}|spi\\spi.csproj|solutionrelative:spi\\components\\pages\\observaciones\\pendientes.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{4DC31253-9D0D-411C-BD88-9F6307D3B4BE}|spi\\spi.csproj|c:\\users\\jmlrs\\documents\\servicio social\\trabajos\\spi\\spi\\spi\\services\\usuario\\usuarioservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -34,7 +30,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 2,
+          "SelectedChildIndex": 1,
           "Children": [
             {
               "$type": "Bookmark",
@@ -42,80 +38,68 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 0,
               "Title": "Home.razor",
               "DocumentMoniker": "C:\\Users\\jmlrs\\Documents\\Servicio social\\Trabajos\\spi\\spi\\spi\\Components\\Pages\\Home.razor",
               "RelativeDocumentMoniker": "spi\\Components\\Pages\\Home.razor",
               "ToolTip": "C:\\Users\\jmlrs\\Documents\\Servicio social\\Trabajos\\spi\\spi\\spi\\Components\\Pages\\Home.razor",
               "RelativeToolTip": "spi\\Components\\Pages\\Home.razor",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAAFAAAAAAAAAA==",
+              "ViewState": "AgIAABUAAAAAAAAAAAAAACgAAAA4AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-11-03T16:53:16.245Z",
+              "WhenOpened": "2025-11-04T19:46:25.863Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 3,
               "Title": "Pendientes.razor",
               "DocumentMoniker": "C:\\Users\\jmlrs\\Documents\\Servicio social\\Trabajos\\spi\\spi\\spi\\Components\\Pages\\Observaciones\\Pendientes.razor",
               "RelativeDocumentMoniker": "spi\\Components\\Pages\\Observaciones\\Pendientes.razor",
               "ToolTip": "C:\\Users\\jmlrs\\Documents\\Servicio social\\Trabajos\\spi\\spi\\spi\\Components\\Pages\\Observaciones\\Pendientes.razor",
               "RelativeToolTip": "spi\\Components\\Pages\\Observaciones\\Pendientes.razor",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAEAAAAAAAAAAAAAAAwAAABiAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
               "WhenOpened": "2025-11-03T16:10:01.727Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "List.razor",
-              "DocumentMoniker": "C:\\Users\\jmlrs\\Documents\\Servicio social\\Trabajos\\spi\\spi\\spi\\Components\\Pages\\Observaciones\\List.razor",
-              "RelativeDocumentMoniker": "spi\\Components\\Pages\\Observaciones\\List.razor",
-              "ToolTip": "C:\\Users\\jmlrs\\Documents\\Servicio social\\Trabajos\\spi\\spi\\spi\\Components\\Pages\\Observaciones\\List.razor",
-              "RelativeToolTip": "spi\\Components\\Pages\\Observaciones\\List.razor",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAB8AAABJAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-11-03T16:06:12.357Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 2,
               "Title": "ObservacionesService.cs",
               "DocumentMoniker": "C:\\Users\\jmlrs\\Documents\\Servicio social\\Trabajos\\spi\\spi\\spi\\Services\\Observaciones\\ObservacionesService.cs",
               "RelativeDocumentMoniker": "spi\\Services\\Observaciones\\ObservacionesService.cs",
               "ToolTip": "C:\\Users\\jmlrs\\Documents\\Servicio social\\Trabajos\\spi\\spi\\spi\\Services\\Observaciones\\ObservacionesService.cs",
               "RelativeToolTip": "spi\\Services\\Observaciones\\ObservacionesService.cs",
-              "ViewState": "AgIAAGcAAAAAAAAAAADwv48AAAAJAAAAAAAAAA==",
+              "ViewState": "AgIAAHUAAAAAAAAAAAAIwB8BAABOAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-10-30T20:31:06.177Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 1,
               "Title": "NavMenu.razor",
               "DocumentMoniker": "C:\\Users\\jmlrs\\Documents\\Servicio social\\Trabajos\\spi\\spi\\spi\\Components\\Layout\\NavMenu.razor",
               "RelativeDocumentMoniker": "spi\\Components\\Layout\\NavMenu.razor",
               "ToolTip": "C:\\Users\\jmlrs\\Documents\\Servicio social\\Trabajos\\spi\\spi\\spi\\Components\\Layout\\NavMenu.razor",
               "RelativeToolTip": "spi\\Components\\Layout\\NavMenu.razor",
-              "ViewState": "AgIAACEAAAAAAAAAAAAAABAAAAAKAAAAAAAAAA==",
+              "ViewState": "AgIAACoAAAAAAAAAAAAAADcAAAAdAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
               "WhenOpened": "2025-10-30T20:30:43.144Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 4,
               "Title": "UsuarioService.cs",
               "DocumentMoniker": "C:\\Users\\jmlrs\\Documents\\Servicio social\\Trabajos\\spi\\spi\\spi\\Services\\Usuario\\UsuarioService.cs",
               "RelativeDocumentMoniker": "spi\\Services\\Usuario\\UsuarioService.cs",
               "ToolTip": "C:\\Users\\jmlrs\\Documents\\Servicio social\\Trabajos\\spi\\spi\\spi\\Services\\Usuario\\UsuarioService.cs",
               "RelativeToolTip": "spi\\Services\\Usuario\\UsuarioService.cs",
-              "ViewState": "AgIAABAAAAAAAAAAAAAQwBcAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAD4AAAAAAAAAAAAswE4AAABCAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-30T20:22:52.132Z"
+              "WhenOpened": "2025-10-30T20:22:52.132Z",
+              "EditorCaption": ""
             }
           ]
         }

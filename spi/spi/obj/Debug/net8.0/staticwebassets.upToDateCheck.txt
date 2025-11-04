@@ -1,6 +1,7 @@
 wwwroot\app.css
 wwwroot\bootstrap\bootstrap.min.css
 wwwroot\bootstrap\bootstrap.min.css.map
+wwwroot\Cuerpo de Gobierno\JAC\LCD 16x2 oct16.docx
 wwwroot\favicon.png
 wwwroot\proyectos del dele\JPM\ACTAJA_ (2).pdf
 wwwroot\proyectos del dele\JPM\ConsultasSIMF Prenatal_20240122.xls
